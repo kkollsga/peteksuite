@@ -40,21 +40,22 @@ numeric kernels; it never depends on petekSim (its consumer). No cycles, no
 sideways code-sharing — conventions are shared, small types are converted at the
 seam (e.g. the FVF value types that cross from PVT as validated scalars).
 
-## The nine-crate workspace
+## One crate, layered modules
 
-petekStatic is a layered Cargo workspace; deps point strictly downward:
+petekStatic is one crate — `petekstatic` — whose internal modules form a strict
+downward-only DAG; the headline `StaticModel` API is re-exported at the crate root:
 
-| crate | responsibility |
+| module | responsibility |
 |---|---|
-| `petekstatic-error` | the one error enum (`StaticError`) + `Result<T>`; chains petekIO's `GeoError` at the ingest seam |
-| `srs-grid` | the i,j,k corner-point grid: cells, corners, per-cell property cubes, gross rock volume |
-| `srs-gridder` | grid construction — layering + conformity + collapse over the framework |
-| `srs-wireframe` | the structural framework: boundary, horizons, contacts, the `HorizonStack` |
-| `srs-data` | the petekIO → geomodel ingest boundary (depth sign flip, frame/georef registration) |
-| `srs-petro` | property modelling — priors, log upscaling, geostatistical population |
-| `srs-volumetrics` | GRV / in-place (OOIP / OGIP), single- and two-contact |
-| `srs-uncertainty` | Monte-Carlo regeneration + tornado over static realizations |
-| `srs-model` | the `StaticModel` aggregate + builder + the ratified MC-regeneration seam (top of the DAG) |
+| `error` | the one error enum (`StaticError`) + `Result<T>`; chains petekIO's `GeoError` at the ingest seam |
+| `grid` | the i,j,k corner-point grid: cells, corners, per-cell property cubes, gross rock volume |
+| `gridder` | grid construction — layering + conformity + collapse over the framework |
+| `wireframe` | the structural framework: boundary, horizons, contacts, the `HorizonStack` |
+| `data` | the petekIO → geomodel ingest boundary (depth sign flip, frame/georef registration) |
+| `petro` | property modelling — priors, log upscaling, geostatistical population |
+| `volumetrics` | GRV / in-place (OOIP / OGIP), single- and two-contact |
+| `uncertainty` | Monte-Carlo regeneration + tornado over static realizations |
+| `model` | the `StaticModel` aggregate + builder + the ratified MC-regeneration seam (top of the DAG) |
 
 ## The workflow, layer by layer
 
@@ -69,7 +70,7 @@ conformity and contacts.
 
 ### 2. Grid construction — the convergent corner-point grid
 
-`srs-gridder` builds an i,j,k **corner-point grid** on a georeferenced frame:
+The `gridder` module builds an i,j,k **corner-point grid** on a georeferenced frame:
 each zone is layered (`nk` layers, proportional/other conformity), negative
 thickness is collapsed, and a minimum-thickness floor keeps degenerate cells out.
 The scatter path (`from_scatter_stack`) is the *single scatter-gridding authority*
@@ -79,7 +80,7 @@ template are built from bit-identical geometry.
 
 ### 3. Property modelling — priors and upscaling
 
-`srs-petro` populates the per-cell cubes. Today: constant/day-1 **priors** and
+The `petro` module populates the per-cell cubes. Today: constant/day-1 **priors** and
 **log upscaling**; geostatistical population (facies, variogram-driven
 propagation, trends) is the growth path. A property can be **net-only**
 (populated only where net-to-gross qualifies), and each property carries its own
@@ -87,7 +88,7 @@ variogram + seed so a run is deterministic and reproducible.
 
 ### 4. Volumetrics — GRV and in-place, per zone
 
-`srs-volumetrics` reads volumes off the model itself. `in_place()` gives whole-
+The `volumetrics` module reads volumes off the model itself. `in_place()` gives whole-
 column GRV / HCPV / OOIP / OGIP; `in_place_by_zone()` computes in-place against
 **each zone's own contacts** and returns a per-zone breakdown plus a rollup total
 (the zone sum equals the total). A zone with an OWC yields oil; a zone with a
@@ -96,7 +97,7 @@ as a validated scalar — petekStatic holds no PVT code.
 
 ### 5. Static uncertainty — MC regeneration over realizations
 
-`srs-uncertainty` regenerates the model under a `RealizationDraw` via
+The `uncertainty` module regenerates the model under a `RealizationDraw` via
 `StaticModelTemplate::realize(&draw)`. The template builds the draw-invariant
 framework **once** and varies only what a draw perturbs (structure, zone contact
 levels, property draws) — bit-deterministic and buffer-recyclable on the hot path.
@@ -133,7 +134,7 @@ Both live in `examples/notebooks/` and are executed end to end on synthetic data
 ## Conventions
 
 Depths are metres, **positive down** (petekIO's negative-down elevation is
-flipped at the `srs-data` ingest boundary). Per-cell cubes are dense vectors
+flipped at the `data` ingest boundary). Per-cell cubes are dense vectors
 indexed by linear cell index; `NaN` marks *undefined*. Every result is a
 `Result<T, StaticError>`. Data in committed tests, examples, and this guide is
 **synthetic only** — petekStatic never ships or references real-dataset content.

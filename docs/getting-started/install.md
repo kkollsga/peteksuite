@@ -4,10 +4,11 @@ The suite is distributed **per library**, on both **crates.io** (Rust) and
 **PyPI** (Python). Each library is usable standalone; you only need the layers
 your work touches.
 
-!!! info "Publishing shortly"
-    The wheels and crates are cut and **publishing shortly**. The versions below
-    are the pinned release versions; until they land on the public indexes, build
-    from the sibling source trees (see [from source](#from-source)).
+!!! info "Rollout status"
+    All four crates and the `petektools` / `petekio` / `petekstatic` wheels are
+    **live**; the `peteksim` wheel is publishing shortly. Anything not yet on the
+    public indexes builds from the sibling source trees (see
+    [from source](#from-source)).
 
 ## The install matrix
 
@@ -15,20 +16,20 @@ your work touches.
 |---|---|---|---|---|
 | **petekTools** | TOOLKIT | `cargo add petektools` | `pip install petektools` | `0.2.0` |
 | **petekIO** | DATA | `cargo add petekio` | `pip install petekio` | `0.3.0` |
-| **petekStatic** | GEOMODEL | `cargo add srs-model` (+ `srs-*`) | `pip install petekstatic` | `0.1.0` |
+| **petekStatic** | GEOMODEL | `cargo add petekstatic` | `pip install petekstatic` | `0.1.0` |
 | **petekSim** | SIMULATION | `cargo add peteksim` | `pip install peteksim` | `0.1.0` |
 
 `peteksim` is **the product** — the single Python facade over the whole stack. If
 you just want to go from a data export to a STOIIP P-curve, install `peteksim`
 and you pull in the rest transitively.
 
-!!! note "petekStatic on crates.io"
-    petekStatic is a Cargo **workspace** of small `srs-*` crates — there is no
-    single `petekstatic` crate. Rust consumers add the aggregate `srs-model` (the
-    `StaticModel` surface) and any specific `srs-*` crate they need (`srs-grid`,
-    `srs-gridder`, `srs-volumetrics`, …). The Python **`petekstatic`** wheel is a
-    minimal, emerging surface; the full geomodel workflow is driven today through
-    the [`peteksim`](../libraries/peteksim.md) facade.
+!!! note "One crate per library"
+    Each library publishes exactly **one crate**. petekStatic's internals
+    (grid, gridder, wireframe, petro, volumetrics, uncertainty, …) are modules
+    of the `petekstatic` crate, with the headline `StaticModel` API re-exported
+    at the crate root. The Python **`petekstatic`** wheel is a minimal, emerging
+    surface; the full geomodel workflow is driven today through the
+    [`peteksim`](../libraries/peteksim.md) facade.
 
 === "Python (pip)"
 
@@ -41,22 +42,21 @@ and you pull in the rest transitively.
     pip install petektools       # the toolkit (kernels + units + viewer)
     ```
 
-    Python 3.9+ ; the wheels are PyO3/abi3 (no local Rust toolchain needed once
+    Python 3.10+ ; the wheels are PyO3/abi3 (no local Rust toolchain needed once
     published).
 
 === "Rust (cargo)"
 
     ```toml
     [dependencies]
-    petektools = "0.2"
-    petekio    = "0.3"
-    srs-model  = "0.1"   # petekStatic's StaticModel aggregate (+ other srs-* as needed)
-    peteksim   = "0.1"
+    petektools  = "0.2"
+    petekio     = "0.3"
+    petekstatic = "0.1"
+    peteksim    = "0.1"
     ```
 
     Add only the layers you depend on — the DAG is one-directional, so a data-only
     consumer needs `petekio` (and transitively `petektools`) and nothing above it.
-    petekStatic ships as the `srs-*` workspace crates (see the note above).
 
 ## From source
 
@@ -75,9 +75,9 @@ VIRTUAL_ENV="$PWD/.venv-srs" .venv-srs/bin/maturin develop -m petekSim/crates/sr
 .venv-srs/bin/python -c "import peteksim as ps; print(ps.version())"
 ```
 
-`petekIO` and `petekTools` build the same way (`maturin develop` / `pip install
-.` in their repo). `petekStatic` is a Rust workspace today; its Python surface is
-reached through the `peteksim` facade (see the [petekStatic
+`petekIO`, `petekTools`, and `petekStatic` build the same way (`maturin develop`
+/ `pip install .` in their repo); `petekStatic`'s full workflow is also reachable
+through the `peteksim` facade (see the [petekStatic
 guide](../libraries/petekstatic.md)).
 
 ## Verify the toolchain

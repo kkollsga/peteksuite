@@ -22,15 +22,18 @@ model.in_place_by_zone()      # petekStatic's per-zone volumetrics
 
 ## The Rust API
 
-| Concern | Where |
-|---|---|
-| The `StaticModel` aggregate + builder + MC-regeneration seam | `srs-model` |
-| Grid construction (convergent corner-point) | `srs-grid`, `srs-gridder`, `srs-wireframe` |
-| Property modelling (priors / log upscaling) | `srs-petro` |
-| Volumetrics + static uncertainty | `srs-volumetrics`, `srs-uncertainty` |
-| Model-ready input access | `srs-data` |
+One crate — `petekstatic` — with the headline `StaticModel` API re-exported at
+the crate root:
 
-Full Rust reference: [docs.rs/srs-model/0.1.0](https://docs.rs/srs-model/0.1.0)
+| Concern | Module |
+|---|---|
+| The `StaticModel` aggregate + builder + MC-regeneration seam | `petekstatic::model` (root re-export) |
+| Grid construction (convergent corner-point) | `petekstatic::{grid, gridder, wireframe}` |
+| Property modelling (priors / log upscaling) | `petekstatic::petro` |
+| Volumetrics + static uncertainty | `petekstatic::{volumetrics, uncertainty}` |
+| Model-ready input access | `petekstatic::data` |
+
+Full Rust reference: [docs.rs/petekstatic/0.1.0](https://docs.rs/petekstatic/0.1.0)
 (see the [Rust API page](rust.md)). Design constitution and the locked contract
 live in the repo's `SPEC.md` / `API.md`.
 
