@@ -1,0 +1,13 @@
+# petekSuite unified docs — mkdocs-material site (built in the umbrella repo).
+# Pinned for reproducible CI (see .github/workflows/docs.yml). Install with:
+#     python -m pip install -r requirements-docs.txt
+#
+# NOTE: the Python API Reference (mkdocstrings) additionally imports the built
+# wheels (petektools / petekio / peteksim). CI installs those from the sibling
+# source trees before building; locally, `pip install ./petekTools ./petekIO
+# ./petekSim/crates/srs-py` into the docs venv.
+mkdocs==1.6.1
+mkdocs-material==9.5.44
+mkdocstrings[python]==0.27.0
+mkdocs-jupyter==0.26.3
+black==24.10.0

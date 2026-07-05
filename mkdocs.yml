@@ -1,0 +1,131 @@
+site_name: petekSuite
+site_description: >-
+  The petek subsurface-modelling ecosystem — from raw subsurface data to static
+  volumes and dynamic forecasts. A family of Rust libraries with Python bindings.
+site_author: petek
+copyright: Copyright &copy; petek — Apache-2.0 (toolkit + data) / BSL-1.1 (geomodel + simulation)
+
+# GitHub Pages serves at https://<user>.github.io/petekSuite/ once the repo is public.
+site_url: https://kkollsga.github.io/petekSuite/
+repo_url: https://github.com/kkollsga/petekSuite
+repo_name: kkollsga/petekSuite
+edit_uri: ""
+
+docs_dir: docs
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.instant
+    - navigation.tracking
+    - navigation.indexes
+    - content.code.copy
+    - content.code.annotate
+    - toc.follow
+    - search.suggest
+    - search.highlight
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - def_list
+  - footnotes
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.snippets:
+      base_path:
+        - docs/_snippets
+      check_paths: true
+
+plugins:
+  - search
+  - mkdocs-jupyter:
+      include_source: true
+      execute: false
+      include: ["*.ipynb"]
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: false
+            show_root_heading: true
+            show_if_no_docstring: true
+            members_order: source
+            separate_signature: true
+            merge_init_into_class: true
+            filters: ["!^_"]
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Install: getting-started/install.md
+      - Architecture & the DAG: getting-started/architecture.md
+      - Licensing: getting-started/licensing.md
+  - Tutorials:
+      - tutorials/index.md
+      - Data ingest with petekIO: tutorials/data-ingest.md
+      - Static model build (flagship): tutorials/static-model-build.md
+      - Simulation & uncertainty: tutorials/simulation-uncertainty.md
+      - Visualization: tutorials/visualization.md
+      - Well analysis: tutorials/well-analysis.md
+      - Synthetic data & testing: tutorials/synthetic-testing.md
+  - How-to:
+      - how-to/index.md
+  - Notebooks:
+      - notebooks/index.md
+      - petekTools — geostat tour: notebooks/petektools/01_geostat_tour.ipynb
+      - petekTools — synthetic data: notebooks/petektools/02_synthetic_data_tour.ipynb
+      - petekIO — ingest tour: notebooks/petekio/01_ingest_tour.ipynb
+      - petekIO — well analysis: notebooks/petekio/02_well_analysis.ipynb
+      - petekStatic — stack model: notebooks/petekstatic/01_stack_model_from_scatter.ipynb
+      - petekStatic — volumes & bundles: notebooks/petekstatic/02_volumes_and_bundles.ipynb
+      - petekSim — full workflow: notebooks/peteksim/01_full_workflow.ipynb
+      - petekSim — scenarios & uncertainty: notebooks/peteksim/02_scenarios_uncertainty.ipynb
+  - Reference:
+      - reference/index.md
+      - petekTools (Python): reference/petektools.md
+      - petekIO (Python): reference/petekio.md
+      - petekStatic: reference/petekstatic.md
+      - petekSim (Python): reference/peteksim.md
+      - Rust API (docs.rs): reference/rust.md
+  - Library guides:
+      - libraries/petektools.md
+      - libraries/petekio.md
+      - libraries/petekstatic.md
+      - libraries/peteksim.md
+  - Explanation:
+      - explanation/index.md
+      - The spec pattern: explanation/spec-pattern.md
+      - Engine architecture: explanation/engine-architecture.md
+  - Gallery: gallery/index.md
