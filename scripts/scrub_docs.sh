@@ -16,7 +16,10 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-PATTERN="${SCRUB_PATTERNS:-EksternalHome}"
+# The benign default only catches generic machine-path leaks (an absolute
+# /Volumes or /Users path accidentally printed into a doc). The real identifier
+# set is injected via $SCRUB_PATTERNS and never tracked.
+PATTERN="${SCRUB_PATTERNS:-/Volumes/|/Users/}"
 
 hits="$(grep -rniE "$PATTERN" docs mkdocs.yml requirements-docs.txt 2>/dev/null || true)"
 
