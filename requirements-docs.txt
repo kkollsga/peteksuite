@@ -9,7 +9,7 @@
 # `docs` job and .readthedocs.yaml pre_build): PyPI first, then a source build
 # from the sibling/cloned trees; a reference page whose wheel is not importable
 # degrades to its curated tables (autodoc block stripped). Once published, pin:
-#     petektools>=0.2.1  petekio>=0.3.0  petekstatic>=0.1.0  peteksim>=0.1.0
+#     petektools>=0.2.1  petekio>=0.3.0  petekstatic>=0.1.0  peteksim>=0.1.1
 # Locally: `pip install ./petekTools ./petekIO ./petekStatic ./petekSim/crates/srs-py`
 # into the docs venv.
 mkdocs==1.6.1

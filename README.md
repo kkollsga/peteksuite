@@ -66,7 +66,7 @@ Every library is **directly installable** from both crates.io (Rust) and PyPI
 | petekTools   | 0.2.1   | `pip install petektools`   | live                |
 | petekIO      | 0.3.0   | `pip install petekio`      | live                |
 | petekStatic  | 0.1.0   | `pip install petekstatic`  | live                |
-| petekSim     | 0.1.0   | `pip install peteksim`     | live                |
+| petekSim     | 0.1.1   | `pip install peteksim`     | live                |
 
 ### Rust (crates.io)
 
@@ -74,7 +74,7 @@ Every library is **directly installable** from both crates.io (Rust) and PyPI
 cargo add petektools@0.2.1     # TOOLKIT — numeric kernels, units, container
 cargo add petekio@0.3.0        # DATA    — ingest + model-ready inputs
 cargo add petekstatic@0.1.0    # GEOMODEL — StaticModel build + volumetrics + MC
-cargo add peteksim@0.1.0       # SIMULATION — the appraisal facade over the stack
+cargo add peteksim@0.1.1       # SIMULATION — the appraisal facade over the stack
 ```
 
 ### Python (PyPI)
@@ -83,7 +83,7 @@ cargo add peteksim@0.1.0       # SIMULATION — the appraisal facade over the st
 pip install petektools==0.2.1
 pip install petekio==0.3.0
 pip install petekstatic==0.1.0   # minimal wheel: build a StaticModel, read volumes + bundles
-pip install peteksim==0.1.0      # the full appraisal facade over the whole stack
+pip install peteksim==0.1.1      # the full appraisal facade over the whole stack
 ```
 
 Dependencies resolve automatically in DAG order (peteksim pulls the stack;

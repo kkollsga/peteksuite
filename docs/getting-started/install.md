@@ -13,7 +13,7 @@ All four libraries are **live** on both indexes.
 | **petekTools** | TOOLKIT | `cargo add petektools` | `pip install petektools` | `0.2.1` |
 | **petekIO** | DATA | `cargo add petekio` | `pip install petekio` | `0.3.0` |
 | **petekStatic** | GEOMODEL | `cargo add petekstatic` | `pip install petekstatic` | `0.1.0` |
-| **petekSim** | SIMULATION | `cargo add peteksim` | `pip install peteksim` | `0.1.0` |
+| **petekSim** | SIMULATION | `cargo add peteksim` | `pip install peteksim` | `0.1.1` |
 
 `peteksim` is **the product** — the single Python facade over the whole stack. If
 you just want to go from a data export to a STOIIP P-curve, install `peteksim`
