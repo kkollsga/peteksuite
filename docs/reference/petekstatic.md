@@ -33,7 +33,7 @@ the crate root:
 | Volumetrics + static uncertainty | `petekstatic::{volumetrics, uncertainty}` |
 | Model-ready input access | `petekstatic::data` |
 
-Full Rust reference: [docs.rs/petekstatic/0.1.0](https://docs.rs/petekstatic/0.1.0)
+Full Rust reference: [docs.rs/petekstatic/0.1.1](https://docs.rs/petekstatic/0.1.1)
 (see the [Rust API page](rust.md)). Design constitution and the locked contract
 live in the repo's `SPEC.md` / `API.md`.
 

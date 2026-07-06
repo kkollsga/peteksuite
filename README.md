@@ -71,7 +71,7 @@ PyPI (Python) — one crate and one wheel per library:
 |--------------|---------|----------------------------|---------------------|
 | petekTools   | 0.2.1   | `pip install petektools`   | live                |
 | petekIO      | 0.3.0   | `pip install petekio`      | live                |
-| petekStatic  | 0.1.0   | `pip install petekstatic`  | live                |
+| petekStatic  | 0.1.1   | `pip install petekstatic`  | live                |
 | petekSim     | 0.1.1   | `pip install peteksim`     | live                |
 
 ### Rust (crates.io)
@@ -79,7 +79,7 @@ PyPI (Python) — one crate and one wheel per library:
 ```sh
 cargo add petektools@0.2.1     # TOOLKIT — numeric kernels, units, container
 cargo add petekio@0.3.0        # DATA    — ingest + model-ready inputs
-cargo add petekstatic@0.1.0    # GEOMODEL — StaticModel build + volumetrics + MC
+cargo add petekstatic@0.1.1    # GEOMODEL — StaticModel build + volumetrics + MC
 cargo add peteksim@0.1.1       # SIMULATION — the appraisal facade over the stack
 ```
 
@@ -88,7 +88,7 @@ cargo add peteksim@0.1.1       # SIMULATION — the appraisal facade over the st
 ```sh
 pip install petektools==0.2.1
 pip install petekio==0.3.0
-pip install petekstatic==0.1.0   # minimal wheel: build a StaticModel, read volumes + bundles
+pip install petekstatic==0.1.1   # minimal wheel: build a StaticModel, read volumes + bundles
 pip install peteksim==0.1.1      # the full appraisal facade over the whole stack
 ```
 

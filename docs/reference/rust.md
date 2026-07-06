@@ -7,7 +7,7 @@ it. The Rust API reference is published on **docs.rs** at each pinned version.
 |---|---|---|
 | `petektools` | TOOLKIT | [docs.rs/petektools/0.2.1](https://docs.rs/petektools/0.2.1) |
 | `petekio` | DATA | [docs.rs/petekio/0.3.0](https://docs.rs/petekio/0.3.0) |
-| `petekstatic` | GEOMODEL | [docs.rs/petekstatic/0.1.0](https://docs.rs/petekstatic/0.1.0) |
+| `petekstatic` | GEOMODEL | [docs.rs/petekstatic/0.1.1](https://docs.rs/petekstatic/0.1.1) |
 | `peteksim` | SIMULATION | [docs.rs/peteksim/0.1.1](https://docs.rs/peteksim/0.1.1) |
 
 Each library publishes exactly **one crate**; internal structure is modules,
