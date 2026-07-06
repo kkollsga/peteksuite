@@ -58,8 +58,14 @@ it depends on none of the others; they build on it.
 
 ## Install
 
-Every library is **directly installable** from both crates.io (Rust) and PyPI
-(Python) — one crate and one wheel per library:
+The whole suite installs with one command:
+
+```sh
+pip install peteksuite     # the meta-package: pulls all four libraries
+```
+
+Every library is also **directly installable** from both crates.io (Rust) and
+PyPI (Python) — one crate and one wheel per library:
 
 | Library      | version | pip                        | Status              |
 |--------------|---------|----------------------------|---------------------|

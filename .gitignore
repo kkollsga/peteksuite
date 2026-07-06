@@ -42,3 +42,6 @@ __pycache__/
 
 # Libraries cloned fresh by the docs build (clone mode / RTD pre_build) — never committed.
 /_libs/
+/.venv-meta/
+/dist/
+/src/peteksuite.egg-info/

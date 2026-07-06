@@ -4,7 +4,11 @@ The suite is distributed **per library**, on both **crates.io** (Rust) and
 **PyPI** (Python). Each library is usable standalone; you only need the layers
 your work touches.
 
-All four libraries are **live** on both indexes.
+All four libraries are **live** on both indexes. The one-command install:
+
+```bash
+pip install peteksuite     # the meta-package — pulls the whole family
+```
 
 ## The install matrix
 

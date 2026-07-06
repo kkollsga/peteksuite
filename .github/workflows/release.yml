@@ -1,0 +1,49 @@
+# Release the `peteksuite` meta-package to PyPI on tag (trusted publishing).
+# Gated per doctrine R9: nothing publishes unless the gates job is green.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  gates:
+    name: gates (build + install + smoke)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build sdist + wheel
+        run: |
+          pip install build twine
+          python -m build
+          twine check dist/*
+      - name: Install the wheel + smoke (pulls the whole family from PyPI)
+        run: |
+          pip install dist/*.whl
+          python - <<'EOF'
+          import peteksuite, peteksim
+          v = peteksuite.versions()
+          print(v)
+          assert all(x != "not installed" for x in v.values()), v
+          EOF
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish-pypi:
+    name: publish to PyPI (trusted publishing)
+    needs: gates
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1

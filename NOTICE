@@ -1,0 +1,8 @@
+petekSuite — Copyright 2026 Kristian dF Kollsgård
+
+This product includes the peteksuite meta-package, licensed under the
+Apache License, Version 2.0. The family packages it installs carry their
+own licenses: petektools and petekio are Apache-2.0; petekstatic and
+peteksim are Business Source License 1.1 (each released version converts
+to Apache-2.0 on its change date). See each package's own LICENSE for the
+authoritative terms.
