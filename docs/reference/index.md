@@ -8,9 +8,9 @@ Generated and curated API reference for the suite.
 - **Rust** — the crate docs on [docs.rs](rust.md).
 
 !!! note "Versions"
-    petekTools `0.2.0` · petekIO `0.3.0` · petekStatic `0.1.0` · petekSim `0.1.0`
-    (publishing shortly). The Python reference is generated from the built
-    packages; the Rust reference links to docs.rs at the pinned versions.
+    petekTools `0.2.1` · petekIO `0.3.0` · petekStatic `0.1.1` · petekSim `0.1.1`.
+    The Python reference is generated from the built packages; the Rust reference
+    links to docs.rs at the pinned versions.
 
 The reference documents the *surface*. For task-oriented guidance start with the
 [Tutorials](../tutorials/index.md); for the *why*, [Explanation](../explanation/index.md).

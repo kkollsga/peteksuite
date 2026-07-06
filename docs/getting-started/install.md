@@ -60,8 +60,9 @@ and you pull in the rest transitively.
 
 ## From source
 
-Before the indexes go live, build the wheels from the sibling repos. `peteksim`
-composes the whole stack, so its build pulls the others in as path deps:
+For a local checkout, build the wheels from the sibling repos. `peteksim`
+composes the whole stack, so its build pulls the family dependencies through
+Cargo:
 
 ```bash
 # 1. Build the horizontal toolkit wheel first (peteksim depends on it):
