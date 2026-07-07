@@ -5,6 +5,18 @@ Python meta-package and documentation/release coordinator for the petek family.
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-07-07
+
+### Added
+- Added lazy `pio`, `pto`, `pst`, and `ps` shorthand imports to the `peteksuite`
+  umbrella package.
+
+### Changed
+- Updated the suite meta-package dependency floors for the current release train:
+  petekTools 0.2.4, petekIO 0.3.3, petekStatic 0.1.6, and petekSim 0.1.4.
+- Updated the release workflow to the Actions-owned tag creation and publishing
+  flow.
+
 ## [0.1.2] - 2026-07-07
 
 ### Changed

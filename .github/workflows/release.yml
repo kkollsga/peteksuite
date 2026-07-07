@@ -1,38 +1,82 @@
-# Release the `peteksuite` meta-package to PyPI on tag (trusted publishing).
-# Gated per doctrine R9: nothing publishes unless the gates job is green.
+# Release the `peteksuite` meta-package to PyPI through trusted publishing.
+# Dispatch this workflow for a branch/ref after branch CI is green. The workflow
+# gates the exact ref, creates or reuses v<version> on that same commit, then
+# publishes and creates the GitHub Release.
 name: Release
 
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Branch, tag, or SHA to release. Defaults to the workflow ref."
+        required: false
+        type: string
+      version:
+        description: "Expected package version. Must match pyproject.toml."
+        required: false
+        type: string
+
+permissions:
+  contents: read
 
 jobs:
-  gates:
-    name: gates (build + install + smoke)
+  prepare:
+    name: resolve release
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.release.outputs.version }}
+      tag: ${{ steps.release.outputs.tag }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
         with:
-          python-version: "3.12"
-      - name: require v* tag
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.ref }}
+          fetch-depth: 0
+      - name: Resolve release tag
+        id: release
+        shell: bash
         run: |
-          case "$GITHUB_REF" in
-            refs/tags/v*) ;;
-            *) echo "release workflow must run from a v* tag, got $GITHUB_REF" >&2; exit 1 ;;
-          esac
-      - name: verify tag matches pyproject
-        run: |
+          set -euo pipefail
           VER=$(python - <<'EOF'
           import tomllib
           print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])
           EOF
           )
-          TAG="${GITHUB_REF_NAME#v}"
-          if [ "$VER" != "$TAG" ]; then
-            echo "tag ${GITHUB_REF_NAME} does not match pyproject version ${VER}" >&2
+          TAG="v$VER"
+          EXPECTED="${{ github.event_name == 'workflow_dispatch' && inputs.version || '' }}"
+          if [ -n "$EXPECTED" ] && [ "$EXPECTED" != "$VER" ]; then
+            echo "expected version $EXPECTED does not match pyproject version $VER" >&2
             exit 1
           fi
+          if [ "${{ github.event_name }}" = "push" ] && [ "$GITHUB_REF_NAME" != "$TAG" ]; then
+            echo "tag $GITHUB_REF_NAME does not match pyproject version $VER" >&2
+            exit 1
+          fi
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] \
+            && git ls-remote --exit-code --tags origin "$TAG" >/dev/null 2>&1; then
+            git fetch --force origin "+refs/tags/$TAG:refs/tags/$TAG"
+            EXISTING_COMMIT=$(git rev-list -n 1 "$TAG")
+            CURRENT_COMMIT=$(git rev-parse HEAD)
+            if [ "$EXISTING_COMMIT" != "$CURRENT_COMMIT" ]; then
+              echo "tag $TAG already exists on $EXISTING_COMMIT, not $CURRENT_COMMIT" >&2
+              exit 1
+            fi
+          fi
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+  gates:
+    name: gates (build + install + smoke)
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.ref }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
       - name: Build sdist + wheel
         run: |
           pip install build twine
@@ -47,33 +91,69 @@ jobs:
           print(v)
           assert all(x != "not installed" for x in v.values()), v
           EOF
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: dist
           path: dist/
 
+  create-tag:
+    name: create release tag
+    needs: [prepare, gates]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.ref }}
+          fetch-depth: 0
+      - name: Create or reuse release tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${{ needs.prepare.outputs.tag }}"
+          if [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+            echo "$TAG supplied by tag push"
+            exit 0
+          fi
+          if git ls-remote --exit-code --tags origin "$TAG" >/dev/null 2>&1; then
+            git fetch --force origin "+refs/tags/$TAG:refs/tags/$TAG"
+            EXISTING_COMMIT=$(git rev-list -n 1 "$TAG")
+            CURRENT_COMMIT=$(git rev-parse HEAD)
+            if [ "$EXISTING_COMMIT" != "$CURRENT_COMMIT" ]; then
+              echo "tag $TAG already exists on $EXISTING_COMMIT, not $CURRENT_COMMIT" >&2
+              exit 1
+            fi
+            echo "$TAG already exists on this commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag "$TAG"
+          git push origin "refs/tags/$TAG"
+
   publish-pypi:
     name: publish to PyPI (trusted publishing)
-    needs: gates
+    needs: [gates, create-tag]
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
       id-token: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: dist
           path: dist/
-      - uses: pypa/gh-action-pypi-publish@release/v1
+      - uses: pypa/gh-action-pypi-publish@release/v1.14
 
   github-release:
     name: GitHub Release
-    needs: publish-pypi
-    if: startsWith(github.ref, 'refs/tags/')
+    needs: [prepare, publish-pypi]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
+          tag_name: ${{ needs.prepare.outputs.tag }}
           generate_release_notes: true

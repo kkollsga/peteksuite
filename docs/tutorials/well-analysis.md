@@ -19,7 +19,7 @@ log tracks, tops as cross-track lines, and zones shaded in their identity colour
 
 ```python
 # On the model path — attach bores when you build:
-model = grid.model(props, con, wells=proj.wells())
+model = grid.model(props, con, wells=proj.wells)
 model.wells_bundle()          # the wells_logs payload the Wells tab renders (or None)
 model.view()                  # open it; the Wells tab is populated
 ```

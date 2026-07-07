@@ -166,6 +166,22 @@ geo2 = petekio.GeoData.open("field.pproj")        # materialize
 petekio.GeoData.export("field.pproj", "share.pproj", ["field-a"])  # tagged subset
 ```
 
+Raw export folders load through `Project`, which exposes notebook-friendly
+inventory lists:
+
+```python
+project = petekio.Project.load("Data", settings=petekio.LoadSettings(crs="EPSG:32631"))
+
+project.surfaces             # loaded surface names
+project.points               # loaded point-set names
+project.polygons             # loaded polygon-set names
+project.tops                 # loaded well-top set names
+project.tops["well tops"]    # pandas DataFrame with the rows from that top set
+project.wells                # loaded well names
+project.wells.logs           # project-wide loaded log names
+project.wells["15/9-A1"].logs # log names in one well
+```
+
 ## Spec value-objects
 
 The declarative, frozen load- and view-time specs — each is JSON-durable

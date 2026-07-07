@@ -36,18 +36,21 @@ fictional multi-zone field with deviated wells, per-zone contacts, and a pinch-o
 — and hands back a manifest describing it:
 
 ```python
-import tempfile, peteksim as ps
+import tempfile
+import petekio as pio
+import peteksim as ps
 
 man  = ps.synth_asset(tempfile.mkdtemp(), seed=20260704, n_wells=8)
-proj = ps.Project.load(man["root"],
-                       settings=ps.LoadSettings(crs=man["crs"], aliases=man["aliases"]))
+proj = pio.Project.load(
+    man["root"],
+    settings=pio.LoadSettings(crs=man["crs"], aliases=man["aliases"]),
+)
 proj.inventory()   # what loaded + what was skipped-with-reason
 ```
 
 The manifest carries the names you feed the specs (`horizons`, `zones`,
 `zonation`, `contacts`, `well_ids`, `net_cutoff`, `crs`, `aliases`, …). On real
-data you would point `Project.load` at your own export folder; the spec workflow
-below is identical.
+data you would point `petekio.Project.load` at your own export folder.
 
 ## The declarative model build (API v2)
 
@@ -93,7 +96,7 @@ geom  = proj.grid_geometry(cell=(50.0, 50.0), orient=0.0)          # geometry
 grid  = geom.build(hz, layering=lay, collapse_negative=True,        # + structure → grid
                    min_thickness_m=0.0)
 model = grid.model(props, con, fluid="oil", fvf=1.30, gas_fvf=0.005,# + props/contacts → model
-                   wells=proj.wells())
+                   wells=proj.wells)
 ```
 
 The seam is deliberate: **spec = WHAT/HOW (holds names)**, **apply = the moment**
@@ -189,7 +192,7 @@ The viewer is tabbed:
   and contact traces, bore-path overlay, vertical-exaggeration slider.
 - **Volume** — the corner-point mesh in three.js: property colouring, a threshold
   slider, zone toggles, i/j/k clip planes, orbit.
-- **Wells** — when bores are attached (`grid.model(..., wells=proj.wells())`), a
+- **Wells** — when bores are attached (`grid.model(..., wells=proj.wells)`), a
   correlation panel with `md`/`tvd` lanes, raw + upscaled log curves, framework
   tops/zones, and per-horizon tie residuals.
 - **Charts** — MC results as render-only bundles: the tornado pivots, histogram

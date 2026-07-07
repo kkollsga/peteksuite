@@ -10,14 +10,20 @@ All four libraries are **live** on both indexes. The one-command install:
 pip install peteksuite     # the meta-package — pulls the whole family
 ```
 
+Then import the layer shorthands from the umbrella package:
+
+```python
+from peteksuite import pio, pto, pst, ps
+```
+
 ## The install matrix
 
 | Library | Layer | `cargo` | `pip` | Version |
 |---|---|---|---|---|
-| **petekTools** | TOOLKIT | `cargo add petektools` | `pip install petektools` | `0.2.3` |
-| **petekIO** | DATA | `cargo add petekio` | `pip install petekio` | `0.3.2` |
-| **petekStatic** | GEOMODEL | `cargo add petekstatic` | `pip install petekstatic` | `0.1.5` |
-| **petekSim** | SIMULATION | `cargo add peteksim` | `pip install peteksim` | `0.1.3` |
+| **petekTools** | TOOLKIT | `cargo add petektools` | `pip install petektools` | `0.2.4` |
+| **petekIO** | DATA | `cargo add petekio` | `pip install petekio` | `0.3.3` |
+| **petekStatic** | GEOMODEL | `cargo add petekstatic` | `pip install petekstatic` | `0.1.6` |
+| **petekSim** | SIMULATION | `cargo add peteksim` | `pip install peteksim` | `0.1.4` |
 
 `peteksim` is **the product** — the single Python facade over the whole stack. If
 you just want to go from a data export to a STOIIP P-curve, install `peteksim`
@@ -85,11 +91,13 @@ guide](../libraries/petekstatic.md)).
 ## Verify the toolchain
 
 ```python
-import peteksim as ps
+from peteksuite import pio, ps
 
 man  = ps.synth_asset("/tmp/petek-demo")     # a fully synthetic Petrel-style export
-proj = ps.Project.load(man["root"],
-                       settings=ps.LoadSettings(crs=man["crs"], aliases=man["aliases"]))
+proj = pio.Project.load(
+    man["root"],
+    settings=pio.LoadSettings(crs=man["crs"], aliases=man["aliases"]),
+)
 print(proj.inventory())
 ```
 

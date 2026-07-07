@@ -44,13 +44,15 @@ contacts, aliases, CRS) you build the specs against.
 
 ## 1 · Ingest
 
-Loading is itself a spec: `LoadSettings` is a value carrying the CRS and the
-mnemonic aliases.
+Project loading is owned by `petekio`; `LoadSettings` carries the CRS and the
+mnemonic aliases there.
 
 ```python
-proj = ps.Project.load(
+import petekio as pio
+
+proj = pio.Project.load(
     man["root"],
-    settings=ps.LoadSettings(crs=man["crs"], aliases=man["aliases"]),
+    settings=pio.LoadSettings(crs=man["crs"], aliases=man["aliases"]),
 )
 proj.inventory()          # what loaded, and what was skipped-with-reason
 ```
@@ -128,7 +130,7 @@ computes volumes. `wells=` attaches bore tracks for the viewer's Wells tab.
 
 ```python
 model = grid.model(props, con, fluid="oil",
-                   fvf=1.30, gas_fvf=0.005, wells=proj.wells())
+                   fvf=1.30, gas_fvf=0.005, wells=proj.wells)
 
 for r in model.in_place_by_zone()["zones"]:
     print(f"{r['zone']:5s} STOIIP={r['stoiip_msm3']:8.3f} MSm³  "

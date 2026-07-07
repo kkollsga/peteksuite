@@ -11,14 +11,11 @@ This is a guide, not a reference: it walks the geomodel workflow end to end and
 points at the two runnable notebooks in `examples/notebooks/`. For exact
 signatures see `API.md`; for the design constitution see `SPEC.md`.
 
-> **Python surface today.** petekStatic has a minimal own wheel (`petekstatic`,
-> exposing `StaticModel`, `build_flat_model`, and `__version__`) for the compact
-> single-zone API. The **rich geomodel workflow** — project inventory, explicit
-> role binding, scatter-conditioned horizon stacks, multi-zone volumes, contact
-> scenarios, bundles, and MC — is driven through the **`peteksim` facade**, which
-> presents petekStatic's engine to Python. Synthetic project trees come from the
-> horizontal `petektools.synth_asset` unit; the notebooks treat that as a source
-> of example input, not as petekStatic functionality.
+> **Python surface today.** Project loading and raw-tree inventory live in
+> `petekio` (`pio.Project.load(..., settings=pio.LoadSettings(...))`). The
+> geomodel workflow lives in `petekstatic`, starting from
+> `pst.Grid.from_project(project)`. `peteksim` remains a downstream product
+> facade, not the source of truth for static project loading.
 
 ## Where petekStatic sits
 

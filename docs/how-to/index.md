@@ -30,7 +30,7 @@ Bundle a whole scenario into a durable, comparable value and round-trip it throu
 a dict (a scenario is a savable file):
 
 ```python
-asset = ps.AssetSpec(name="deep-case", load=ps.LoadSettings(crs=man["crs"]),
+asset = ps.AssetSpec(name="deep-case",
                      horizons=hz, layering=lay, contacts=deeper, props=props)
 blob  = asset.to_dict()                       # JSON-able; write it to a file
 assert ps.spec_from_dict(blob) == asset       # reload it later, exactly

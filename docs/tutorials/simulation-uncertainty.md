@@ -119,12 +119,12 @@ exactly this (two derived specs → two deterministic, differing models).
 
 ## Durable scenarios
 
-A whole scenario is a savable file. `AssetSpec` bundles the load settings +
-structure + layering + contacts + props into one value that round-trips through a
+A whole scenario is a savable file. `AssetSpec` bundles structure + layering +
+contacts + props into one value that round-trips through a
 plain dict:
 
 ```python
-asset = ps.AssetSpec(name="demo", load=ps.LoadSettings(crs=man["crs"]),
+asset = ps.AssetSpec(name="demo",
                      horizons=hz, layering=lay, contacts=con, props=props)
 assert ps.spec_from_dict(asset.to_dict()) == asset      # durable, comparable
 ```
