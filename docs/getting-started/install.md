@@ -21,9 +21,9 @@ from peteksuite import pio, pto, pst, ps
 | Library | Layer | `cargo` | `pip` | Version |
 |---|---|---|---|---|
 | **petekTools** | TOOLKIT | `cargo add petektools` | `pip install petektools` | `0.2.4` |
-| **petekIO** | DATA | `cargo add petekio` | `pip install petekio` | `0.3.3` |
-| **petekStatic** | GEOMODEL | `cargo add petekstatic` | `pip install petekstatic` | `0.1.6` |
-| **petekSim** | SIMULATION | `cargo add peteksim` | `pip install peteksim` | `0.1.4` |
+| **petekIO** | DATA | `cargo add petekio` | `pip install petekio` | `0.3.4` |
+| **petekStatic** | GEOMODEL | `cargo add petekstatic` | `pip install petekstatic` | `0.1.7` |
+| **petekSim** | SIMULATION | `cargo add peteksim` | `pip install peteksim` | `0.1.5` |
 
 `peteksim` is **the product** — the single Python facade over the whole stack. If
 you just want to go from a data export to a STOIIP P-curve, install `peteksim`

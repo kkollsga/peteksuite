@@ -76,26 +76,26 @@ PyPI (Python) — one crate and one wheel per library:
 | Library      | version | pip                        | Status              |
 |--------------|---------|----------------------------|---------------------|
 | petekTools   | 0.2.4   | `pip install petektools`   | live                |
-| petekIO      | 0.3.3   | `pip install petekio`      | live                |
-| petekStatic  | 0.1.6   | `pip install petekstatic`  | live                |
-| petekSim     | 0.1.4   | `pip install peteksim`     | live                |
+| petekIO      | 0.3.4   | `pip install petekio`      | live                |
+| petekStatic  | 0.1.7   | `pip install petekstatic`  | live                |
+| petekSim     | 0.1.5   | `pip install peteksim`     | live                |
 
 ### Rust (crates.io)
 
 ```sh
 cargo add petektools@0.2.4     # TOOLKIT — numeric kernels, units, container
-cargo add petekio@0.3.3        # DATA    — ingest + model-ready inputs
-cargo add petekstatic@0.1.6    # GEOMODEL — StaticModel build + volumetrics + MC
-cargo add peteksim@0.1.4       # SIMULATION — the appraisal facade over the stack
+cargo add petekio@0.3.4        # DATA    — ingest + model-ready inputs
+cargo add petekstatic@0.1.7    # GEOMODEL — StaticModel build + volumetrics + MC
+cargo add peteksim@0.1.5       # SIMULATION — the appraisal facade over the stack
 ```
 
 ### Python (PyPI)
 
 ```sh
 pip install petektools==0.2.4
-pip install petekio==0.3.3
-pip install petekstatic==0.1.6   # static workflow API, StaticModel, volumes + bundles
-pip install peteksim==0.1.4      # the full appraisal facade over the whole stack
+pip install petekio==0.3.4
+pip install petekstatic==0.1.7   # static workflow API, StaticModel, volumes + bundles
+pip install peteksim==0.1.5      # the full appraisal facade over the whole stack
 ```
 
 Dependencies resolve automatically in DAG order (peteksim pulls the stack;

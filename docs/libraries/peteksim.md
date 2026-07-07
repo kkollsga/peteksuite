@@ -41,11 +41,11 @@ import petekio as pio
 import peteksim as ps
 
 man  = ps.synth_asset(tempfile.mkdtemp(), seed=20260704, n_wells=8)
-proj = pio.Project.load(
+project = pio.Project.load(
     man["root"],
     settings=pio.LoadSettings(crs=man["crs"], aliases=man["aliases"]),
 )
-proj.inventory()   # what loaded + what was skipped-with-reason
+project.inventory()   # what loaded + what was skipped-with-reason
 ```
 
 The manifest carries the names you feed the specs (`horizons`, `zones`,
@@ -87,21 +87,9 @@ props = ps.Props(
 )
 ```
 
-Then you **apply** them at three explicit moments. Each moment consumes specs and
-returns the next concrete object; errors are loud, naming both the missing project
-object and the spec entry:
-
-```python
-geom  = proj.grid_geometry(cell=(50.0, 50.0), orient=0.0)          # geometry
-grid  = geom.build(hz, layering=lay, collapse_negative=True,        # + structure → grid
-                   min_thickness_m=0.0)
-model = grid.model(props, con, fluid="oil", fvf=1.30, gas_fvf=0.005,# + props/contacts → model
-                   wells=proj.wells)
-```
-
-The seam is deliberate: **spec = WHAT/HOW (holds names)**, **apply = the moment**
-(`geom.build`, `grid.model`, `model.zoned_uncertainty`). Because specs are values,
-scenario work is just deriving a new spec (see below) and re-applying it.
+Project-backed structure/property application is owned by `petekstatic`, starting
+from `pst.Grid.from_project(project)`. petekSim no longer exposes the project
+application facade.
 
 ### Reading the model
 
@@ -167,7 +155,7 @@ hz_drop = hz.replace(rows=hz.rows[:-1], zones=hz.zones[:-1])   # drop the deepes
 lay_hi  = lay.replace("Z*", dz=5.0)                             # refine layering
 ```
 
-`ps.AssetSpec(...)` bundles a whole scenario — load settings, horizons, layering,
+`ps.AssetSpec(...)` bundles simulation/scenario settings — horizons, layering,
 contacts, props — into one durable value that round-trips through
 `to_dict()` / `ps.spec_from_dict(...)`, so a full scenario is a file you can
 version, diff, and re-run.
@@ -192,7 +180,7 @@ The viewer is tabbed:
   and contact traces, bore-path overlay, vertical-exaggeration slider.
 - **Volume** — the corner-point mesh in three.js: property colouring, a threshold
   slider, zone toggles, i/j/k clip planes, orbit.
-- **Wells** — when bores are attached (`grid.model(..., wells=proj.wells)`), a
+- **Wells** — when bores are attached (`grid.model(..., wells=proj.wells())`), a
   correlation panel with `md`/`tvd` lanes, raw + upscaled log curves, framework
   tops/zones, and per-horizon tie residuals.
 - **Charts** — MC results as render-only bundles: the tornado pivots, histogram
