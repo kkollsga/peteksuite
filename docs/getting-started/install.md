@@ -14,10 +14,10 @@ pip install peteksuite     # the meta-package — pulls the whole family
 
 | Library | Layer | `cargo` | `pip` | Version |
 |---|---|---|---|---|
-| **petekTools** | TOOLKIT | `cargo add petektools` | `pip install petektools` | `0.2.1` |
-| **petekIO** | DATA | `cargo add petekio` | `pip install petekio` | `0.3.0` |
-| **petekStatic** | GEOMODEL | `cargo add petekstatic` | `pip install petekstatic` | `0.1.1` |
-| **petekSim** | SIMULATION | `cargo add peteksim` | `pip install peteksim` | `0.1.1` |
+| **petekTools** | TOOLKIT | `cargo add petektools` | `pip install petektools` | `0.2.3` |
+| **petekIO** | DATA | `cargo add petekio` | `pip install petekio` | `0.3.2` |
+| **petekStatic** | GEOMODEL | `cargo add petekstatic` | `pip install petekstatic` | `0.1.5` |
+| **petekSim** | SIMULATION | `cargo add peteksim` | `pip install peteksim` | `0.1.3` |
 
 `peteksim` is **the product** — the single Python facade over the whole stack. If
 you just want to go from a data export to a STOIIP P-curve, install `peteksim`
@@ -28,8 +28,8 @@ and you pull in the rest transitively.
     (grid, gridder, wireframe, petro, volumetrics, uncertainty, …) are modules
     of the `petekstatic` crate, with the headline `StaticModel` API re-exported
     at the crate root. The Python **`petekstatic`** wheel is a minimal, emerging
-    surface; the full geomodel workflow is driven today through the
-    [`peteksim`](../libraries/peteksim.md) facade.
+    surface; the full property workflow is canonical in petekStatic and is also
+    reachable through the [`peteksim`](../libraries/peteksim.md) facade.
 
 === "Python (pip)"
 
@@ -40,6 +40,7 @@ and you pull in the rest transitively.
     # Or a single layer, standalone:
     pip install petekio          # the data layer
     pip install petektools       # the toolkit (kernels + units + viewer)
+    pip install petekstatic      # static model workflows
     ```
 
     Python 3.10+ ; the wheels are PyO3/abi3 (no local Rust toolchain needed once

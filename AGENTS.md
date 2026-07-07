@@ -84,6 +84,10 @@ Use the skills — don't hand-roll their jobs:
 - **`suite-status`** — roll up ecosystem readiness (each library's state + the
   graph's lifecycle dashboard + dependency-version coherence). The coordinator's
   "are we coherent to ship?" view.
+- **`release`** — run the suite release train from here: check each subrepo one
+  by one, sweep docs/changelog against the release diff, bump patch by default
+  unless the user specifies otherwise, run gates, commit/tag, push with explicit
+  approval, then monitor CI/release/RTD before moving to the next repo.
 
 ## Working style
 
@@ -103,8 +107,12 @@ mode. Activate the full flow once git lands.
 
 ## Commits & releases
 
-Each library releases **itself** (per-library `release` flow). The coordinator
-does not bump or push library versions; it verifies ecosystem coherence
-(`suite-status`) and coordinates the sequencing. Commit format (once this folder
-is under git): `type: short description`. **Pushing requires explicit,
-in-the-moment approval.**
+Each library releases **itself** (per-library release artifacts and workflows).
+When the owner invokes the suite-level **`release`** skill, that invocation is
+authorization to drive the per-library release flows one subrepo at a time:
+commit, tag, push, monitor CI/release workflows, and make fix-and-recommit pushes
+needed to complete the release. Otherwise, the coordinator does not bump or push
+library versions; it verifies ecosystem coherence (`suite-status`) and
+coordinates the sequencing. Commit format (once this folder is under git):
+`type: short description`. Pushing outside `/release` requires explicit,
+in-the-moment approval.

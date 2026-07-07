@@ -57,8 +57,8 @@ jobs:
       - name: Install library wheels (best-effort)
         continue-on-error: true
         run: |
-          pip install petektools petekio peteksim || true
-          for p in _libs/petekTools _libs/petekIO; do
+          pip install petektools petekio petekstatic peteksim || true
+          for p in _libs/petekTools _libs/petekIO _libs/petekStatic; do
             [ -d "$p" ] && pip install "$p" || true
           done
           [ -d _libs/petekSim/crates/srs-py ] && pip install ./_libs/petekSim/crates/srs-py || true

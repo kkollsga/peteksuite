@@ -13,7 +13,7 @@ https://peteksuite.readthedocs.io/ for the tutorials and the full reference.
 
 from importlib.metadata import PackageNotFoundError, version as _version
 
-__version__ = "0.1.0"
+__version__ = "0.1.2"
 
 _FAMILY = ("petektools", "petekio", "petekstatic", "peteksim")
 
