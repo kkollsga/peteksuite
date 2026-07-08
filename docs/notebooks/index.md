@@ -1,8 +1,9 @@
 # Notebooks
 
-Eight **fully executed** notebooks — two per library — all built on synthetic data
-from deterministic seeds. Each is executed end-to-end as part of the build gate
-(execution failure is a build failure), so the outputs you see are real.
+Eight synthetic-data notebooks — two per library — are carried as rendered
+examples. They are useful for orientation, but the project/static workflow is
+moving quickly; use the library guides and reference pages as the API authority
+when a notebook lags a release.
 
 | Library | Notebook | What it shows |
 |---|---|---|

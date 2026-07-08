@@ -75,27 +75,27 @@ PyPI (Python) — one crate and one wheel per library:
 
 | Library      | version | pip                        | Status              |
 |--------------|---------|----------------------------|---------------------|
-| petekTools   | 0.2.4   | `pip install petektools`   | live                |
-| petekIO      | 0.3.5   | `pip install petekio`      | live                |
-| petekStatic  | 0.1.8   | `pip install petekstatic`  | live                |
-| petekSim     | 0.1.6   | `pip install peteksim`     | live                |
+| petekTools   | 0.2.5   | `pip install petektools`   | live                |
+| petekIO      | 0.3.6   | `pip install petekio`      | live                |
+| petekStatic  | 0.1.9   | `pip install petekstatic`  | live                |
+| petekSim     | 0.1.7   | `pip install peteksim`     | live                |
 
 ### Rust (crates.io)
 
 ```sh
-cargo add petektools@0.2.4     # TOOLKIT — numeric kernels, units, container
-cargo add petekio@0.3.5        # DATA    — ingest + model-ready inputs
-cargo add petekstatic@0.1.8    # GEOMODEL — StaticModel build + volumetrics + MC
-cargo add peteksim@0.1.6       # SIMULATION — the appraisal facade over the stack
+cargo add petektools@0.2.5     # TOOLKIT — numeric kernels, units, container
+cargo add petekio@0.3.6        # DATA    — ingest + model-ready inputs
+cargo add petekstatic@0.1.9    # GEOMODEL — StaticModel build + volumetrics + MC
+cargo add peteksim@0.1.7       # SIMULATION — the appraisal facade over the stack
 ```
 
 ### Python (PyPI)
 
 ```sh
-pip install petektools==0.2.4
-pip install petekio==0.3.5
-pip install petekstatic==0.1.8   # static workflow API, StaticModel, volumes + bundles
-pip install peteksim==0.1.6      # the full appraisal facade over the whole stack
+pip install petektools==0.2.5
+pip install petekio==0.3.6
+pip install petekstatic==0.1.9   # static workflow API, StaticModel, volumes + bundles
+pip install peteksim==0.1.7      # the full appraisal facade over the whole stack
 ```
 
 Dependencies resolve automatically in DAG order (peteksim pulls the stack;

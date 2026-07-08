@@ -217,7 +217,7 @@ Both live in `examples/notebooks/`. They can be executed end to end on the
 synthetic project tree produced by `petektools.synth_asset`, or pointed at a
 user export by changing the data-source cell and replacing the visible role
 literals with names from `Project.inventory()`. Each notebook keeps synthetic
-generation, `Project.load`/inventory inspection, and the main modelling workflow
+generation, `Project.import_data`/inventory inspection, and the main modelling workflow
 in separate cells so the swap point is obvious. Run the petekStatic workflow
 slice with `petekio`, `petektools`, and `petekstatic`; the older product-facing
 notebooks also need `peteksim` until their final build cells are fully lowered.

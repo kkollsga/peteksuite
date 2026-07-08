@@ -1,14 +1,9 @@
 #!/usr/bin/env python3
-"""The modelling API v2 headline: declarative specs applied at explicit moments,
-from a (synthetic) Petrel export to a per-zone STOIIP P-curve — on the canonical
-synthetic asset.
+"""Current suite modelling shape: petekIO imports the project, petekStatic owns
+the static grid/properties/volumes workflow, and petekSim supplies appraisal
+helpers such as synthetic assets and box-model smoke checks.
 
-    VIRTUAL_ENV="$PWD/.venv-srs" .venv-srs/bin/maturin develop -m crates/srs-py/Cargo.toml
-    .venv-srs/bin/python examples/model_build_v2.py
-
-A spec says WHAT/HOW and holds NAMES (resolved at apply); applications are the
-explicit moments geom.build / grid.model / model.zoned_uncertainty. No
-confidential data is used or produced.
+No confidential data is used or produced.
 """
 
 from __future__ import annotations
@@ -18,67 +13,71 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import petekio as pio  # noqa: E402
+import petekstatic as pst  # noqa: E402
 import peteksim as ps  # noqa: E402
 
 
 def main(root: str | None = None) -> int:
     root = root or tempfile.mkdtemp(prefix="model-v2-")
     man = ps.synth_asset(root)
-    print(f"peteksim {ps.version()} — modelling API v2 over {man['root']}\n")
+    print(f"peteksim {ps.version()} — suite workflow over {man['root']}\n")
 
-    # INGEST — a LoadSettings spec is a value (crs + alias canonicalisation).
-    proj = ps.Project.load(
-        man["root"], settings=ps.LoadSettings(crs=man["crs"], aliases=man["aliases"]))
-    print("Project.load  ", proj.inventory())
-
-    # DECLARE — structure + settings as names, resolved at apply.
-    hz = ps.Horizons(
-        *[ps.hz(h) for h in man["horizons"]],
-        zones=man["zones"],
-        ties=ps.TieSettings(method="convergent"),
-        gridding=ps.Gridding(collapse=True),
+    # INGEST — petekIO owns raw exports and project persistence.
+    project = pio.Project.import_data(
+        man["root"],
+        settings=pio.ImportSettings(crs=man["crs"], aliases=man["aliases"]),
     )
-    lay = ps.Layering(nk=2)
-    con = ps.Contacts({z["zone"]: dict(z["contacts"])
-                       for z in man["zonation"] if z["contacts"]})
-    props = ps.Props(
-        ps.Prop("PORO", net_only=True,
-                propagate=ps.Propagate(variogram=ps.variogram("spherical", 1500.0), seed=11)),
-        ps.Prop("NTG",
-                propagate=ps.Propagate(variogram=ps.variogram("spherical", 1500.0), seed=12)),
+    print("Project.import_data  ", project.inventory())
+
+    # STRUCTURE — petekStatic consumes the petekIO project.
+    grid = (
+        pst.Grid.from_project(project)
+        .geometry(cell=(50.0, 50.0), orient=0.0)
+        .horizons(
+            [
+                {
+                    "name": "Top reservoir",
+                    "surface": man["horizons"][0],
+                    "zone": "Reservoir",
+                },
+                man["horizons"][-1],
+            ],
+            well_tie={"influence_radius": 800},
+        )
+        .layers({"Reservoir": pst.Layering(n=8)})
     )
-    print("\nHorizons spec (a value — prints as its stratigraphic column):")
-    print(hz)
 
-    # APPLY — the explicit moments.
-    geom = proj.grid_geometry(cell=(50.0, 50.0), orient=0)
-    grid = geom.build(hz, layering=lay, collapse_negative=True, min_thickness_m=0.0)
-    model = grid.model(props, con, fluid="oil", fvf=1.30, gas_fvf=0.005, wells=proj.wells())
-    print("\nmodel:", model, " is_zoned:", model.is_zoned())
+    # PROPERTIES — constants, formulas, or log-upscale recipes.
+    logs = project.wells.logs
+    vgm = pst.Var("spherical", major=1500, minor=700, vertical=20, azimuth=35)
+    p = grid.properties
+    p.ntg = pst.upscale(logs.NetSand).sgs(variogram=vgm, seed=11)
+    p.por = pst.upscale(logs.PHIE(logs.NetSand > 0.50)).sgs(
+        distribution=pst.distributions.from_logs(),
+        variogram=vgm,
+        seed=12,
+    )
+    p.sw = 0.20
 
-    for r in model.in_place_by_zone()["zones"]:
-        print(f"  {r['zone']:5s}  STOIIP={r['stoiip_sm3']/1e6:8.3f} MSm³  "
-              f"two_contact={r['two_contact']}")
+    # VOLUMES — deterministic simple volumes on the current workflow facade.
+    result = grid.volumes(ntg="ntg", por="por", sw="sw", fluid="oil", fvf=1.30).run()
+    print("static volume summary:", result.summary())
 
-    # MC — one Mc spec, auto-routed to the zoned run.
-    mc = model.zoned_uncertainty(ps.Mc(porosity=0.01, contacts=4.0, goc=3.0, n=2000, seed=42))
-    t = mc.total["stoiip"]
-    print(f"\nfield STOIIP P90/P50/P10 = "
-          f"{t['p90_msm3']:.3f} / {t['p50_msm3']:.3f} / {t['p10_msm3']:.3f} MSm³")
-
-    # SCENARIO — a derived spec (deeper Z4 FWL): same geometry, a new model.
-    deeper = con.replace("Z4", goc=man["contacts"]["goc_z4"],
-                         fwl=man["contacts"]["fwl_z4"] + 30.0)
-    model_b = grid.model(props, deeper, fluid="oil", fvf=1.30, gas_fvf=0.005)
-    a = model.in_place_by_zone()["total"]["stoiip_sm3"] / 1e6
-    b = model_b.in_place_by_zone()["total"]["stoiip_sm3"] / 1e6
-    print(f"\nscenario derivation: base total {a:.3f} MSm³ → deeper-FWL {b:.3f} MSm³")
-
-    # A scenario is a savable file: round-trip the whole asset spec through a dict.
-    asset = ps.AssetSpec(name="demo", load=ps.LoadSettings(crs=man["crs"]),
-                         horizons=hz, layering=lay, contacts=con, props=props)
-    assert ps.spec_from_dict(asset.to_dict()) == asset
-    print("\nAssetSpec round-trips through to_dict/from_dict (durable scenario).")
+    # petekSim remains available for appraisal-level helpers.
+    box = ps.run_box_model(
+        area_km2=(0.32, 0.40, 0.52),
+        gross_height_m={"normal": [15.0, 1.5]},
+        porosity=0.25,
+        net_to_gross=0.8,
+        water_saturation=0.3,
+        fvf=1.25,
+        fluid="oil",
+        contact_m=2743.0,
+        seed=42,
+    )
+    print("box P90/P50/P10:", box.summary_msm3)
     return 0
 
 

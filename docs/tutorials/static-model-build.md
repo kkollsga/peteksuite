@@ -4,12 +4,10 @@
 ratified **v2 modelling API**: declarative *specs* applied at explicit *moments*.
 This is the canonical end-to-end path — every other tutorial branches off it.
 
-!!! success "This whole page is CI-tested"
-    The [complete example](#the-complete-tested-example) at the bottom is
-    included verbatim from `examples/model_build_v2.py`, which runs green as part
-    of peteksim's acceptance suite (testing-doctrine **R7**, workflow-shape lock)
-    on the canonical synthetic asset. The step-by-step snippets below narrate that
-    same tested flow.
+!!! note "Current suite ownership"
+    The [complete example](#the-complete-example) at the bottom follows the
+    current ownership split: `petekio` imports projects, `petekstatic` builds the
+    static model workflow, and `peteksim` provides appraisal helpers.
 
 ## The pattern
 
@@ -159,9 +157,9 @@ deeper  = con.replace("Z4", goc=man["contacts"]["goc_z4"],
 model_b = grid.model(props, deeper, fluid="oil", fvf=1.30, gas_fvf=0.005)
 ```
 
-## The complete tested example
+## The complete example
 
-The full flow above, exactly as it runs in peteksim's acceptance suite:
+The full flow above as a compact script:
 
 ```python
 --8<-- "model_build_v2.py"

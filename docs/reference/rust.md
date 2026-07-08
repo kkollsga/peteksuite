@@ -5,10 +5,10 @@ it. The Rust API reference is published on **docs.rs** at each pinned version.
 
 | Crate | Layer | docs.rs |
 |---|---|---|
-| `petektools` | TOOLKIT | [docs.rs/petektools/0.2.4](https://docs.rs/petektools/0.2.4) |
-| `petekio` | DATA | [docs.rs/petekio/0.3.5](https://docs.rs/petekio/0.3.5) |
-| `petekstatic` | GEOMODEL | [docs.rs/petekstatic/0.1.8](https://docs.rs/petekstatic/0.1.8) |
-| `peteksim` | SIMULATION | [docs.rs/peteksim/0.1.6](https://docs.rs/peteksim/0.1.6) |
+| `petektools` | TOOLKIT | [docs.rs/petektools/0.2.5](https://docs.rs/petektools/0.2.5) |
+| `petekio` | DATA | [docs.rs/petekio/0.3.6](https://docs.rs/petekio/0.3.6) |
+| `petekstatic` | GEOMODEL | [docs.rs/petekstatic/0.1.9](https://docs.rs/petekstatic/0.1.9) |
+| `peteksim` | SIMULATION | [docs.rs/peteksim/0.1.7](https://docs.rs/peteksim/0.1.7) |
 
 Each library publishes exactly **one crate**; internal structure is modules,
 not extra crates.
