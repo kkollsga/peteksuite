@@ -80,19 +80,45 @@ point exports have to infer from XY alone unless `Project.import_data(...)` can
 enrich them from a same-stem EarthVision topology export in the raw project tree.
 
 ```python
-geom = pts.infer_geometry(tolerance=1e-3)  # default edge="concave_hull"
+geom = pts.infer_geometry(tolerance=1e-3)  # default edge="full_rect"
 surf = pts.to_surface(geom, method="nearest")
 mesh = pts.to_structured_surface(edge="occupied")
 ```
 
 Inference is deliberately strict and raises when points are scattered, duplicate
-without topology fields, or do not fit the detected lattice within tolerance.
-The default `edge="concave_hull"` uses the outer occupied-cell footprint when
-`column`/`row` topology exists, then falls back to the locally connected point
-triangulation. Use `edge="trimesh"` explicitly to QC the triangulated boundary,
-`edge="occupied"` when you want the smallest grid-oriented rectangle covering
-all point XYs, `edge="full_rect"` for the inferred regular geometry rectangle,
-and `edge="convex_hull"` for a convex envelope comparison. Use
+without topology fields, do not fit the detected lattice within tolerance, or form
+a curvilinear mesh that no regular lattice describes — promote those with
+`to_structured_surface(...)`, which stores explicit per-node XY.
+
+When a surface export has lost its `column`/`row` fields, recover them rather than
+forcing the points onto a lattice:
+
+```python
+labelled, report = pts.detect_topology()
+if report.verified:
+    mesh = labelled.to_structured_surface()   # exact: no point moved
+else:
+    tin = pts.to_tri_surface()                # fault-cut: report.blocks > 1
+```
+
+`detect_topology` detects the grid azimuth and a step per axis, then walks the grid
+paths to *label* each point. It never moves one, and it will not walk across a fault:
+there the neighbour relation is not determined by geometry, so it re-seeds and labels
+the far side as its own **block** rather than silently welding them together.
+`report.blocks == 1` means an uninterrupted grid; more means the surface is fault-cut,
+and `verified` is `False`.
+
+`to_tri_surface(max_link=None)` is the fallback for that case: the points become the
+vertices of a triangulated surface, unmoved, and the fault is honoured rather than
+bridged — `TriSurface.components` reports how many blocks survived. `max_link` is the
+longest triangle edge to keep, in **cells**, and must lie in `(√2, 2)`.
+
+The default `edge="full_rect"` is the four-corner rectangle of the inferred
+lattice: cheap, but it claims the whole bounding lattice even where nodes carry no
+data. Use `edge="occupied"` for the true data footprint — the outline of the
+occupied nodes, which follows interior holes and a non-rectangular boundary, and
+costs the same as `full_rect`. `edge="convex_hull"` gives a convex envelope for
+comparison. Use
 `to_structured_surface(...)` for topology-bearing Petrel surfaces that are
 locally shifted around faults; use `to_surface(...)` when you want gridding onto
 an explicit regular model geometry.

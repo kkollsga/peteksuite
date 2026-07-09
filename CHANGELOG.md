@@ -5,6 +5,19 @@ Python meta-package and documentation/release coordinator for the petek family.
 
 ## [Unreleased]
 
+## [0.1.10] - 2026-07-09
+
+### Changed
+- Release-train dependency floors: `petekio>=0.3.9` and `peteksim>=0.1.10`.
+  petekIO 0.3.9 rejects a curvilinear mesh instead of returning a `GridGeometry`
+  no node sits on, changes what `PointSet.infer_geometry(edge="occupied")`
+  returns, removes the `concave_hull`/`trimesh` edge aliases, and adds
+  `detect_topology(...)` + `to_tri_surface(...)`. petekSim 0.1.10 carries the
+  fixed `model_build_v2` example.
+- Synced `docs/libraries/petekio.md` from petekIO's guide: the point-edge default
+  is now `full_rect`, and the topology-recovery / TIN-fallback flow is documented.
+
+
 ## [0.1.9] - 2026-07-08
 
 ### Fixed
