@@ -8,7 +8,7 @@ Generated and curated API reference for the suite.
 - **Rust** — the crate docs on [docs.rs](rust.md).
 
 !!! note "Versions"
-    petekTools `0.2.7` · petekIO `0.3.8` · petekStatic `0.1.11` · petekSim `0.1.9`.
+    petekTools `0.2.8` · petekIO `0.3.10` · petekStatic `0.1.12` · petekSim `0.1.11`.
     The Python reference is generated from the built packages; the Rust reference
     links to docs.rs at the pinned versions.
 

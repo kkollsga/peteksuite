@@ -80,15 +80,17 @@ point exports have to infer from XY alone unless `Project.import_data(...)` can
 enrich them from a same-stem EarthVision topology export in the raw project tree.
 
 ```python
-geom = pts.infer_geometry(tolerance=1e-3)  # default edge="full_rect"
-surf = pts.to_surface(geom, method="nearest")
+geometry = pts.infer_geometry(tolerance=1e-3)  # GridGeometry or TriSurface
+if isinstance(geometry, petekio.GridGeometry):
+    surf = pts.to_surface(geometry, method="nearest")
 mesh = pts.to_structured_surface(edge="occupied")
 ```
 
-Inference is deliberately strict and raises when points are scattered, duplicate
-without topology fields, do not fit the detected lattice within tolerance, or form
-a curvilinear mesh that no regular lattice describes — promote those with
-`to_structured_surface(...)`, which stores explicit per-node XY.
+Regular-grid inference remains strict: it only returns a `GridGeometry` when the
+points fit the detected lattice within tolerance. If they do not, the public
+`infer_geometry(...)` call falls back to an exact unstructured `TriSurface`
+instead of raising. Use `to_structured_surface(...)` when logical column/row
+topology matters; it stores explicit per-node XY for curvilinear meshes.
 
 When a surface export has lost its `column`/`row` fields, recover them rather than
 forcing the points onto a lattice:

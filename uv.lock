@@ -1150,16 +1150,13 @@ wheels = [
 [[package]]
 name = "petekio"
 source = { editable = "petekIO" }
-dependencies = [
-    { name = "petektools" },
-]
 
 [package.metadata]
 requires-dist = [
     { name = "pandas", marker = "extra == 'pandas'" },
-    { name = "petektools", specifier = ">=0.2.7,<0.3" },
+    { name = "petektools", marker = "extra == 'toolkit'", specifier = ">=0.2.7,<0.3" },
 ]
-provides-extras = ["pandas"]
+provides-extras = ["pandas", "toolkit"]
 
 [[package]]
 name = "peteksim"
@@ -1172,7 +1169,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "petekio", specifier = ">=0.3.8" },
+    { name = "petekio", specifier = ">=0.3.9" },
     { name = "petekstatic", specifier = ">=0.1.11" },
     { name = "petektools", specifier = ">=0.2.7" },
 ]
@@ -1181,19 +1178,15 @@ requires-dist = [
 name = "petekstatic"
 source = { editable = "petekStatic" }
 dependencies = [
-    { name = "petekio" },
     { name = "petektools" },
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "petekio", specifier = ">=0.3.8,<0.4" },
-    { name = "petektools", specifier = ">=0.2.7,<0.3" },
-]
+requires-dist = [{ name = "petektools", specifier = ">=0.2.7,<0.3" }]
 
 [[package]]
 name = "peteksuite"
-version = "0.1.9"
+version = "0.1.11"
 source = { editable = "." }
 dependencies = [
     { name = "petekio" },

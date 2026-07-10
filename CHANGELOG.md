@@ -5,6 +5,21 @@ Python meta-package and documentation/release coordinator for the petek family.
 
 ## [Unreleased]
 
+## [0.1.11] - 2026-07-10
+
+### Changed
+- Centralized release, GitHub Actions, todo, planning, and managed-agent
+  coordination in petekSuite; removed the redundant sublibrary skill systems.
+- Reworked the release train to build reusable ABI3 wheels once, fan out
+  compatibility installs, publish independent dependency waves in parallel,
+  retry registry visibility, and report trigger-to-install timing without
+  weakening Rust, Python-version, minimal-feature, or package gates.
+- Advanced the suite floors to petekTools 0.2.8, petekIO 0.3.10,
+  petekStatic 0.1.12, and petekSim 0.1.11.
+- `PointSet.infer_geometry(...)` now falls back to an exact `TriSurface` when a
+  point set cannot satisfy a regular lattice, while continuing to return
+  `GridGeometry` for genuinely regular exports.
+
 ## [0.1.10] - 2026-07-09
 
 ### Changed
