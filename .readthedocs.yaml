@@ -23,8 +23,7 @@ build:
       #    from the freshly cloned source trees. Rust may be absent on RTD, so a
       #    source build can fail — the guard step below keeps the build green.
       - pip install petektools petekio petekstatic peteksim || true
-      - for p in _libs/petekTools _libs/petekIO _libs/petekStatic; do [ -d "$p" ] && pip install "$p" || true; done
-      - '[ -d _libs/petekSim/crates/srs-py ] && pip install ./_libs/petekSim/crates/srs-py || true'
+      - for entry in "petektools:_libs/petekTools" "petekio:_libs/petekIO" "petekstatic:_libs/petekStatic" "peteksim:_libs/petekSim/crates/srs-py"; do module="${entry%%:*}"; path="${entry#*:}"; python -c "import ${module}" 2>/dev/null && echo "${module} installed from PyPI; skip source fallback" && continue; [ -d "$path" ] && echo "${module} missing; build cloned source fallback" && pip install "$path" || true; done
       # 3. Degrade gracefully: for any library whose wheel is not importable,
       #    strip the trailing ':::' autodoc block from its reference page so the
       #    curated tables still render under --strict.
@@ -36,8 +35,8 @@ build:
 
 # The mkdocs toolchain (mkdocs, material, mkdocstrings, jupyter, black). The four
 # library wheels are installed best-effort in pre_build (step 2). Current release
-# floors: petektools>=0.2.7, petekio>=0.3.8, petekstatic>=0.1.11,
-# peteksim>=0.1.9.
+# floors: petektools>=0.2.8, petekio>=0.3.10, petekstatic>=0.1.12,
+# peteksim>=0.1.11.
 python:
   install:
     - requirements: requirements-docs.txt
