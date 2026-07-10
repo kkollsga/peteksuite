@@ -68,7 +68,7 @@ stamp provenance (`git_sha`, `modified_by="petekSuite"`); write discipline in
 - `dev-docs/` — one suite + owner-namespaced action index. Map: `dev-docs/README.md`.
 - `inbox/` — external-project communication only. Map: `inbox/README.md`.
 
-## Skills (central, version-controlled in `.agents/skills/`)
+## Skills (central, version-controlled in `.agents/skills/`; `.claude/skills` symlinks there so Claude and Codex load the same tree — managed sublibraries carry no skills, only coordinator-organized agents)
 
 Use the skills — don't hand-roll their jobs:
 - **`coordinate`** — gated multi-library initiatives using direct agents.
