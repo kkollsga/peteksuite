@@ -1,0 +1,4 @@
+interface:
+  display_name: "Read External Inbox"
+  short_description: "Process external coordination messages"
+  default_prompt: "Use $read-inbox to process petekSuite external coordination messages."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Coordinate Suite Initiative"
+  short_description: "Run gated work across managed libraries"
+  default_prompt: "Use $coordinate to plan and execute a cross-library petekSuite initiative."

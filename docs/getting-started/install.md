@@ -20,10 +20,10 @@ from peteksuite import pio, pto, pst, ps
 
 | Library | Layer | `cargo` | `pip` | Version |
 |---|---|---|---|---|
-| **petekTools** | TOOLKIT | `cargo add petektools` | `pip install petektools` | `0.2.7` |
-| **petekIO** | DATA | `cargo add petekio` | `pip install petekio` | `0.3.8` |
-| **petekStatic** | GEOMODEL | `cargo add petekstatic` | `pip install petekstatic` | `0.1.11` |
-| **petekSim** | SIMULATION | `cargo add peteksim` | `pip install peteksim` | `0.1.9` |
+| **petekTools** | TOOLKIT | `cargo add petektools` | `pip install petektools` | `0.2.8` |
+| **petekIO** | DATA | `cargo add petekio` | `pip install petekio` | `0.3.10` |
+| **petekStatic** | GEOMODEL | `cargo add petekstatic` | `pip install petekstatic` | `0.1.12` |
+| **petekSim** | SIMULATION | `cargo add peteksim` | `pip install peteksim` | `0.1.11` |
 
 `peteksim` is **the product** — the single Python facade over the whole stack. If
 you just want to go from a data export to a STOIIP P-curve, install `peteksim`

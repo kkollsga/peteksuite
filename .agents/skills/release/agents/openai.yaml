@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release petekSuite"
+  short_description: "Publish the centrally managed release train"
+  default_prompt: "Use $release to prepare, publish, and verify the petekSuite release train."

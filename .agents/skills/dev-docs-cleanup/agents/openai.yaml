@@ -1,0 +1,4 @@
+interface:
+  display_name: "Clean Central Dev Docs"
+  short_description: "Reconcile and prune central action state"
+  default_prompt: "Use $dev-docs-cleanup to reconcile the central petekSuite action system."

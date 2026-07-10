@@ -63,10 +63,20 @@ jobs:
             --retries 2 \
             --timeout 20 \
             petektools petekio petekstatic peteksim || true
-          for p in _libs/petekTools _libs/petekIO _libs/petekStatic; do
-            [ -d "$p" ] && pip install "$p" || true
+          for entry in \
+            "petektools:_libs/petekTools" \
+            "petekio:_libs/petekIO" \
+            "petekstatic:_libs/petekStatic" \
+            "peteksim:_libs/petekSim/crates/srs-py"; do
+            module="${entry%%:*}"
+            path="${entry#*:}"
+            if python -c "import ${module}" 2>/dev/null; then
+              echo "${module} installed from PyPI; skip source fallback"
+            elif [ -d "$path" ]; then
+              echo "${module} missing; build cloned source fallback"
+              pip install "$path" || true
+            fi
           done
-          [ -d _libs/petekSim/crates/srs-py ] && pip install ./_libs/petekSim/crates/srs-py || true
           true
 
       - name: Guard reference autodoc (strip blocks for absent wheels)

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Add Central Todo"
+  short_description: "Capture owned work in the central backlog"
+  default_prompt: "Use $add-todo to capture this action in the central owner-namespaced backlog."

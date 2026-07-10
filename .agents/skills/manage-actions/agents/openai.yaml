@@ -1,0 +1,4 @@
+interface:
+  display_name: "Manage Suite Actions"
+  short_description: "Inspect and operate Actions across petekSuite"
+  default_prompt: "Use $manage-actions to inspect or operate GitHub Actions across the petekSuite repositories."

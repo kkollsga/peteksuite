@@ -43,14 +43,13 @@ dependency. The shared conventions are the **petek family house style**
 
 ## The coordinator's job (what this agent does — and doesn't)
 
-- **Does:** sequence cross-library initiatives (`coordinate`), route work to the
-  owning library (`read-inbox` → `notify`), track ecosystem coherence
-  (`suite-status`), keep the cross-library contracts/seams in `dev-docs/designs/`,
-  and hold the plan against the graph.
-- **Does NOT:** build or refactor a library's internals from here. A task scoped
-  to one library is **routed to that library's inbox** and done by that library's
-  agent, in its own `dev-docs/`. The coordinator plans and connects; it does not
-  reach in.
+- **Does:** own every managed agent, central todo, graph write, GitHub Actions
+  operation, release, and cross-library initiative. Work inside one library is
+  executed by a directly spawned owning-library agent through
+  `run-library-task`; multi-library work uses `coordinate`.
+- **Does NOT:** silently edit a library from the coordinator context or route
+  managed work through inbox files. The coordinator scopes, spawns, supervises,
+  verifies, and records; the owning agent edits its repository.
 
 ## The planning graph is the hub
 
@@ -67,52 +66,57 @@ stamp provenance (`git_sha`, `modified_by="petekSuite"`); write discipline in
 
 ## Working folders (both gitignored)
 
-- `dev-docs/` — cross-library plans/designs + `todos.md`. Map: `dev-docs/README.md`.
-- `inbox/` — the coordinator's channel + routing hub. Map: `inbox/README.md`.
+- `dev-docs/` — the single suite + owner-namespaced action index. Map:
+  `dev-docs/README.md`.
+- `inbox/` — external-project communication only. Managed libraries use direct
+  agents. Map: `inbox/README.md`.
 
-## Skills (in the gitignored `.Codex/`)
+## Skills (central, version-controlled in `.agents/skills/`)
 
 Use the skills — don't hand-roll their jobs:
 - **`coordinate`** — run a cross-library initiative as gated phases (**one
-  library / one migration step per phase**). The manager analog of a phased plan.
-- **`add-todo`** — capture a coordination thread into `todos.md` + a `plans/` doc.
-- **`dev-docs-cleanup`** — tidy the working folder; purge time-boxed dirs.
-- **`read-inbox`** — triage the coordinator inbox; **route** library-scoped tasks
-  down to the owning library.
-- **`notify`** — send a note to a managed library or an outside sibling. Sign as
-  **`petekSuite`**. Never hand-read/write inbox files.
+  library / one migration step per phase**) using direct agents.
+- **`run-library-task`** — spawn and supervise the owning sublibrary agent for
+  any single-library task; preserve its technical gates and commit discipline.
+- **`manage-actions`** — centrally inspect/change/dispatch/monitor repo-local CI
+  and release endpoints. It never grants publishing authority.
+- **`add-todo`** — capture any suite/library action in one central index with an
+  explicit owner and owner-namespaced detail.
+- **`dev-docs-cleanup`** — reconcile the central backlog and purge time-boxed state.
+- **`read-inbox` / `notify`** — external projects only; never managed libraries.
 - **`suite-status`** — roll up ecosystem readiness (each library's state + the
   graph's lifecycle dashboard + dependency-version coherence). The coordinator's
   "are we coherent to ship?" view.
-- **`release`** — run the suite release train from here: check each subrepo one
-  by one, sweep docs/changelog against the release diff, bump patch by default
-  unless the user specifies otherwise, run gates, commit/tag, push with explicit
-  approval, then monitor CI/release/RTD before moving to the next repo.
+- **`release`** — run the suite release train from here: prepare each subrepo
+  independently, then publish in dependency waves (Tools → IO+Static → Sim →
+  Suite). Raise downstream dependency floors only when code requires the new
+  upstream API/fix, and advance on registry availability rather than waiting for
+  unrelated GitHub Release/RTD jobs.
 
 ## Working style
 
 - **Reproduce before fixing / claiming.** Confirm cross-library facts against the
   graph or the library itself before acting on them — evidence, not assumption.
-- **No coordination dropped.** A surfaced cross-library issue gets a `todos.md`
-  thread or a routed note — never silently stepped over.
-- **Route, don't hoard.** Keep only genuinely cross-library work here; push the
-  rest down to the owning library.
+- **No work dropped.** Every actionable finding gets an explicit owner in the
+  central todo/graph state or is fixed by a directly supervised library agent.
+- **Delegate, don't impersonate.** Spawn the owning library agent; keep control,
+  authorization, Actions, todo, and release state in petekSuite.
 
-## Pre-git mode
+## Git mode
 
-petekSuite is **not yet a git repo** (the graph HAS moved here — it lives at
-`petekSuite/research/graph`). Until `git init` happens, `coordinate`'s branch/PR
-steps and `suite-status`'s push/publish coherence checks run in a local, pre-git
-mode. Activate the full flow once git lands.
+petekSuite is a git repo. Cross-library initiatives use coordinator branches and
+the full branch/PR checks; the planning graph remains gitignored working state at
+`petekSuite/research/graph` and must still be saved through the `contract` MCP.
 
 ## Commits & releases
 
-Each library releases **itself** (per-library release artifacts and workflows).
-When the owner invokes the suite-level **`release`** skill, that invocation is
-authorization to drive the per-library release flows one subrepo at a time:
-commit, tag, push, monitor CI/release workflows, and make fix-and-recommit pushes
-needed to complete the release. Otherwise, the coordinator does not bump or push
-library versions; it verifies ecosystem coherence (`suite-status`) and
-coordinates the sequencing. Commit format (once this folder is under git):
+petekSuite is the sole release authority. Each repository retains a thin local
+workflow as its GitHub/security boundary, but no library owns a release skill.
+Invoking the suite-level **`release`** skill authorizes the coordinator to drive
+the per-library release flows:
+commit, push, dispatch Actions-owned tag/publish workflows, monitor them, and
+make fix-and-recommit pushes needed to complete the release. Otherwise, the
+coordinator does not bump or push library versions; it verifies ecosystem
+coherence (`suite-status`) and coordinates sequencing. Commit format:
 `type: short description`. Pushing outside `/release` requires explicit,
 in-the-moment approval.

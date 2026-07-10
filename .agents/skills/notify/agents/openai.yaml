@@ -1,0 +1,4 @@
+interface:
+  display_name: "Notify External Project"
+  short_description: "Send an asynchronous external handoff"
+  default_prompt: "Use $notify to send this action to an external project."

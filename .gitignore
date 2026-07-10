@@ -1,7 +1,6 @@
 # The coordinator's local working state — never committed (matches each library's convention).
 /dev-docs/
 /inbox/
-/.claude/
 /.mcp.json
 /CLAUDE.local.md
 /.venv/
@@ -30,8 +29,8 @@ __pycache__/
 # The confidentiality tripwire contains the identifier patterns it hunts — never committed.
 /scrub-check.sh
 
-# Local agent/tooling config + helper scripts + study Makefile — never committed.
-/.agents/
+# Local helper scripts and study Makefile — never committed. The central
+# `.agents/skills/` control plane is intentionally version-controlled.
 /.codex/
 /gq
 /kg

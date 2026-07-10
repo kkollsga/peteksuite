@@ -1,0 +1,4 @@
+interface:
+  display_name: "Run Library Task"
+  short_description: "Directly supervise work in a managed library"
+  default_prompt: "Use $run-library-task to execute a scoped task in the owning petekSuite library."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Suite Status"
+  short_description: "Roll up readiness across every repository"
+  default_prompt: "Use $suite-status to assess petekSuite ecosystem readiness."

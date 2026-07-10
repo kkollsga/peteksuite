@@ -43,14 +43,12 @@ dependency. The shared conventions are the **petek family house style**
 
 ## The coordinator's job (what this agent does — and doesn't)
 
-- **Does:** sequence cross-library initiatives (`coordinate`), route work to the
-  owning library (`read-inbox` → `notify`), track ecosystem coherence
-  (`suite-status`), keep the cross-library contracts/seams in `dev-docs/designs/`,
-  and hold the plan against the graph.
-- **Does NOT:** build or refactor a library's internals from here. A task scoped
-  to one library is **routed to that library's inbox** and done by that library's
-  agent, in its own `dev-docs/`. The coordinator plans and connects; it does not
-  reach in.
+- **Does:** own managed agents, central todos, graph writes, Actions, releases,
+  and cross-library initiatives. A single-library task is executed by a directly
+  spawned owning agent through `run-library-task`.
+- **Does NOT:** route managed work through inboxes or silently edit a library as
+  the coordinator. It scopes, supervises, verifies, and records the owning
+  agent's work.
 
 ## The planning graph is the hub
 
@@ -67,44 +65,39 @@ stamp provenance (`git_sha`, `modified_by="petekSuite"`); write discipline in
 
 ## Working folders (both gitignored)
 
-- `dev-docs/` — cross-library plans/designs + `todos.md`. Map: `dev-docs/README.md`.
-- `inbox/` — the coordinator's channel + routing hub. Map: `inbox/README.md`.
+- `dev-docs/` — one suite + owner-namespaced action index. Map: `dev-docs/README.md`.
+- `inbox/` — external-project communication only. Map: `inbox/README.md`.
 
-## Skills (in the gitignored `.claude/`)
+## Skills (central, version-controlled in `.agents/skills/`)
 
 Use the skills — don't hand-roll their jobs:
-- **`coordinate`** — run a cross-library initiative as gated phases (**one
-  library / one migration step per phase**). The manager analog of a phased plan.
-- **`add-todo`** — capture a coordination thread into `todos.md` + a `plans/` doc.
-- **`dev-docs-cleanup`** — tidy the working folder; purge time-boxed dirs.
-- **`read-inbox`** — triage the coordinator inbox; **route** library-scoped tasks
-  down to the owning library.
-- **`notify`** — send a note to a managed library or an outside sibling. Sign as
-  **`petekSuite`**. Never hand-read/write inbox files.
+- **`coordinate`** — gated multi-library initiatives using direct agents.
+- **`run-library-task`** — directly supervise the owning sublibrary agent.
+- **`manage-actions`** — centrally operate repo-local Actions endpoints.
+- **`add-todo`** / **`dev-docs-cleanup`** — own one central owner-namespaced backlog.
+- **`read-inbox`** / **`notify`** — external projects only.
 - **`suite-status`** — roll up ecosystem readiness (each library's state + the
   graph's lifecycle dashboard + dependency-version coherence). The coordinator's
   "are we coherent to ship?" view.
+- **`release`** — the only publishing authority; prepare through direct agents
+  and dispatch/monitor dependency-wave workflows through `manage-actions`.
 
 ## Working style
 
 - **Reproduce before fixing / claiming.** Confirm cross-library facts against the
   graph or the library itself before acting on them — evidence, not assumption.
-- **No coordination dropped.** A surfaced cross-library issue gets a `todos.md`
-  thread or a routed note — never silently stepped over.
-- **Route, don't hoard.** Keep only genuinely cross-library work here; push the
-  rest down to the owning library.
+- **No work dropped.** Every action gets a central owner or is fixed directly.
+- **Delegate, don't impersonate.** Spawn the owning agent and verify its work.
 
-## Pre-git mode
+## Git mode
 
-petekSuite is **not yet a git repo** (the graph HAS moved here — it lives at
-`petekSuite/research/graph`). Until `git init` happens, `coordinate`'s branch/PR
-steps and `suite-status`'s push/publish coherence checks run in a local, pre-git
-mode. Activate the full flow once git lands.
+petekSuite and all four managed libraries are git repositories. The graph and
+central operational state remain gitignored and are persisted through their
+own graph/dev-docs mechanisms.
 
 ## Commits & releases
 
-Each library releases **itself** (per-library `release` flow). The coordinator
-does not bump or push library versions; it verifies ecosystem coherence
-(`suite-status`) and coordinates the sequencing. Commit format (once this folder
-is under git): `type: short description`. **Pushing requires explicit,
-in-the-moment approval.**
+petekSuite is the sole release authority. Repositories retain thin local Actions
+entrypoints for credentials/triggers, centrally dispatched by `release` through
+`manage-actions`. Outside an explicit release, pushing requires in-the-moment
+approval. Commit format: `type: short description`.
