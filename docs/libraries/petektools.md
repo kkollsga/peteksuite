@@ -183,11 +183,102 @@ declares and computes nothing itself; new cross-sections come from a consumer's
 The viewer is horizontal capability: it serves every layer of the ecosystem, so
 it lives here. The full guide is in `VIEWER.md`.
 
-For lightweight map QC, `petektools.view2d([...])` accepts point-like objects
-and geometry-like objects. Point sets render as points only. Geometry-like
-objects render grid lines, and when they expose an `edge` polygon the grid-line
-overlay is clipped to that edge so inferred grids, structured surfaces, and
-point clouds line up in the same view.
+For lightweight map QC, `petektools.view2d([...])` accepts point-like objects,
+geometry-like objects, and triangulated meshes. Point sets render as points
+only. Geometry-like objects render grid lines, and when they expose an `edge`
+polygon the grid-line overlay is clipped to that edge so inferred grids,
+structured surfaces, and point clouds line up in the same view. Mesh-like
+objects (`triangles()` over `xyz()`/`points()` vertices) render their unique
+triangle edges as grid lines with the mesh `edge` rings as the outline; a mesh
+that also offers `wireframe_edges()` index pairs draws exactly those instead —
+quad-dominant, with interior cell diagonals removed.
+
+Three kwargs add value rendering. `color=` colours **points**
+by their z value (and selects the colormap for whatever is value-coloured) —
+it never triggers fills, and it defaults ON (pass `color=False` for
+monochrome points). When `fill` is omitted, an item offering callable
+`attr_names()` and `value_layer()` contributes its primary layer followed by
+every named attribute to the Fill selector. Explicit `fill=False` disables
+fills, `fill=True` requests primary only, and `fill="name"` requests that one
+attribute. Each per-node value layer paints as a value-coloured
+fill *under* the grid lines (each triangle flat-filled with the colormap
+colour of its mean node value; a triangle touching a NaN node is left
+unfilled). `contours=25.0` asks each item offering `iso_lines()` for contour
+polylines at a 25-unit interval (`iso_lines(interval=25.0)`), while
+`contours=[1500, 1550]` requests exact levels (`iso_lines(levels=...)`).
+
+`color=` and `fill=` accept `True` or a string spec parsed by registry match:
+`"[<attr>_]<cmap>[_<min>_<max>]"` with `<cmap>` one of `viridis` / `magma` /
+`grays` / `inferno` — so `color="inferno"` picks the colormap,
+`color="inferno_-2700_-2500"` adds an explicit clamp range (out-of-range
+values clamp to the ramp ends), `color="porosity"` stays an attribute name
+(forwarded as `attr=` to `iso_lines`; `fill="porosity"` asks
+`value_layer(attr="porosity")`), and `"porosity_inferno_0_0.3"` combines all
+three. A malformed spec (e.g. one trailing float) raises `ValueError`. The
+viewer panel gets a fill selector (when several items contribute fills),
+"Fill"/"Contours" toggles, and a per-layer legend — type icon + the item's
+duck-typed `name` and active lane (e.g. `"Top Dome · thickness"`) + the colour
+ramp and clamped range on value-coloured layers. Items without these methods are
+silently unaffected:
+
+```python
+petektools.view2d([surface, well_points], color="inferno_-2700_-2500",
+                  fill=True, contours=25.0)
+```
+
+Colour can also be set **per object** (view2d and view3d): pass a dict item
+`{"object": obj, "color": ..., "fill": ..., "name": ...}` anywhere a bare
+object is accepted. Per-object settings win over the call-level
+`color=`/`fill=` (including omitted-fill attribute discovery for a dict item
+without its own `fill`), `name` overrides the legend display name, and each
+layer then carries — and the legend shows — its own colormap ramp and clamp
+range:
+
+```python
+petektools.view2d([
+    {"object": top_points, "color": "inferno_-2700_-2500"},
+    {"object": base_points, "color": "viridis", "name": "Base Dome"},
+    grid_geometry,
+])
+```
+
+Two more `view2d` kwargs tune the wire and the feel, not the picture.
+`encoding="blocks"` (the default) ships the map's bulk arrays as compact
+typed binary blocks — roughly 3× smaller than JSON floats on a large payload,
+decoded off the main thread; pass `encoding="json"` for a plain-JSON payload
+(small payloads are unaffected either way). `lod=True` (the default) adds a
+coarse display-only ring beside each fill / mesh grid / contour set from
+producers that support striding; the viewer switches to it when zoomed far
+out (a small "LOD" chip shows while coarse is on) and back to full resolution
+as you zoom in — **the data itself is never decimated**. `lod=(stride,)` /
+`lod=(stride, simplify)` tune it; `lod=False` turns it off. See the schema
+doc's MapBundle notes for the exact payload shapes.
+
+`petektools.view3d([...])` renders the same items in **one Three.js scene**
+(the viewer's "3D" tab) at full view2d parity: the same duck-typed item
+handling plus wells (`trajectory()` of `[x, y, z]` rows, z elevation —
+negative down), the same `color=` / `fill=` / `contours=` semantics and spec
+grammar, and the same per-layer legend. Points render as a colour-coded 3-D
+cloud (compact binary blocks, smooth at the 200k default cap). **Solid
+surface layers are for surfaces only**: a true regular surface
+(`kind == "surface"`) passed bare renders a neutral elevation mesh
+(value-coloured under `fill=`); every other geometry-ish item passed bare —
+a bare trimesh, a grid-geometry lattice, a `.geometry`-bearing value item —
+renders as a flat wireframe grid at the shallowest point of its own nodes
+(z is elevation, negative down; a z-less geometry uses the scene's
+shallowest point), edge rings at the same level. Contours draw at their
+level. A `z_exaggeration=` kwarg seeds
+the tab's z-exaggeration slider (display-only, default 5x — the volume tab's
+control). Inspection on both the Map and 3D tabs is **click-driven**: hover
+shows nothing; a still click on/near an object anchors a readout (dataset
+name, x, y, z/value) at the clicked location until the next click — and in
+the 3-D scene the click also re-targets the orbit rotation pivot to the
+picked point (camera position unchanged), so orbiting rotates around what
+you clicked:
+
+```python
+petektools.view3d([pts, geom], color="inferno_-2700_-2500")
+```
 
 ## Where to go next
 

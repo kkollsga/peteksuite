@@ -65,8 +65,30 @@ top.stats().mean                # count / mean / min / max / std / p10 / p50 / p
 top.area_below(1990.0)          # Σ cell-area where value ≤ depth — the GRV-style query
 top.resample(target_geometry)   # bilinear onto another lattice
 base = geo.surface("base_res")
-thick = petekio.Surface.thickness(top, base, clamp_zero=True)  # base − top, ≥ 0
+thick = top.thickness(base, clamp_zero=True)  # base − top, ≥ 0
+# Equivalent unbound form: petekio.Surface.thickness(top, base, clamp_zero=True)
+top.thickness = thick              # add/replace a COW attribute lane
+top.attr["thickness"]              # read the promoted lane as a Surface
+smoothed = top.smooth(radius=1)    # moving average; holes remain holes
+dip = top.dip_angle()              # degrees from horizontal
+azimuth = top.dip_azimuth()        # down-dip, clockwise from North
+filled = top.extrapolate("nearest")  # fill holes; also "idw" / "min_curvature"
 ```
+
+Surface assignment accepts only another `Surface` with exactly the same grid
+geometry (including origin, increments, node counts, rotation, and y-flip).
+`set_attr("thickness", thick)` is the explicit equivalent. Attribute lanes are
+read through `surface.attr[...]`, leaving `Surface.thickness(...)` callable as
+the equivalent unbound thickness calculation; `surface.thickness(base)` remains
+the normal instance form.
+
+Dip uses central differences where both neighbours exist and one-sided
+differences at boundaries or beside holes. Derivatives are transformed through
+the grid spacing, rotation, and y-flip into world East/North. A flat node has
+zero dip angle and undefined (`NaN`) azimuth. Extrapolation uses only finite
+nodes as controls and changes only original `NaN` nodes; existing finite and
+infinite values remain bit-for-bit unchanged. All four methods above return a
+detached, same-geometry surface containing only its new primary lane.
 
 Scattered `(x, y, z)` data grids into a surface via `PointSet.to_surface(geom,
 method)` with `"nearest"`, `"idw"`, or `"minimum_curvature"` (Briggs biharmonic,
@@ -80,17 +102,16 @@ point exports have to infer from XY alone unless `Project.import_data(...)` can
 enrich them from a same-stem EarthVision topology export in the raw project tree.
 
 ```python
-geometry = pts.infer_geometry(tolerance=1e-3)  # GridGeometry or TriSurface
-if isinstance(geometry, petekio.GridGeometry):
-    surf = pts.to_surface(geometry, method="nearest")
+geom = pts.infer_geometry(tolerance=1e-3)  # GridGeometry or bridged TriSurface fallback
+if isinstance(geom, petekio.GridGeometry):
+    surf = pts.to_surface(geom, method="nearest")
 mesh = pts.to_structured_surface(edge="occupied")
 ```
 
-Regular-grid inference remains strict: it only returns a `GridGeometry` when the
-points fit the detected lattice within tolerance. If they do not, the public
-`infer_geometry(...)` call falls back to an exact unstructured `TriSurface`
-instead of raising. Use `to_structured_surface(...)` when logical column/row
-topology matters; it stores explicit per-node XY for curvilinear meshes.
+Regular inference is deliberately strict. When the points do not fit a lattice,
+`infer_geometry(...)` returns a `TriSurface` instead of inventing a geometry;
+topology-bearing curvilinear exports can also be promoted with
+`to_structured_surface(...)`, which stores explicit per-node XY.
 
 When a surface export has lost its `column`/`row` fields, recover them rather than
 forcing the points onto a lattice:
@@ -110,10 +131,28 @@ the far side as its own **block** rather than silently welding them together.
 `report.blocks == 1` means an uninterrupted grid; more means the surface is fault-cut,
 and `verified` is `False`.
 
-`to_tri_surface(max_link=None)` is the fallback for that case: the points become the
-vertices of a triangulated surface, unmoved, and the fault is honoured rather than
-bridged — `TriSurface.components` reports how many blocks survived. `max_link` is the
-longest triangle edge to keep, in **cells**, and must lie in `(√2, 2)`.
+`to_tri_surface(max_link=None, max_bridge=None)` is the strict primitive for that case: the
+points become the vertices of a triangulated surface, unmoved, and the fault is
+honoured rather than bridged — `TriSurface.components` reports how many blocks
+survived. `max_link` is the longest triangle edge to keep, in **cells**, and must lie
+in `(√2, 2)`. `max_bridge` (also in cells, `>= max_link`) opt-in closes the mesh where
+the geometry does not close — the boundary fringe, fault seams, interior data gaps —
+admitting edges up to that length. The higher-level `infer_geometry(...)` fallback
+defaults `max_bridge` to `3.4` cells to close ordinary export fringes and seams; pass
+`max_bridge=None` there for the strict lattice-closed result. Calling
+`to_tri_surface()` directly remains strict by default.
+
+Geometry is a **flat empty shell** in three levels of complexity — the rigid
+`GridGeometry` (eight scalars, XY computed), the `StructuredShell` (`(i, j)` nodes
+with explicit XY), and the `MeshShell` (node ids + triangles + a quad-dominant
+wireframe) — and surfaces are a shell plus per-node property lanes (`values` = z
+first among equals, named attributes via `attr`/`set_attr`; shells are shared, so
+extra attributes never repeat geometry). Every surface level offers
+`iso_lines(interval=..., levels=..., attr=...)` contour polylines and
+`value_layer(attr=...)` for value-coloured viewing (the petektools 2-D viewer
+consumes both via `view2d(color=..., contours=...)`), and conversions run up the
+ladder losslessly (`to_structured_mesh()`, `to_tri_surface()`) or down by
+inference/resampling (`infer_grid(tolerance)`, `resample(geom, method)`).
 
 The default `edge="full_rect"` is the four-corner rectangle of the inferred
 lattice: cheap, but it claims the whole bounding lattice even where nodes carry no

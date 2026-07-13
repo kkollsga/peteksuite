@@ -5,6 +5,18 @@ Python meta-package and documentation/release coordinator for the petek family.
 
 ## [Unreleased]
 
+## [0.1.13] - 2026-07-13
+
+### Changed
+- Advanced the umbrella floors to `petektools>=0.2.13` and
+  `petekio>=0.3.13`. The pair adds click-to-inspect Map/3D interaction,
+  per-object viewer styling, automatic primary/Surface-attribute fill
+  selection, 3.4-cell geometry fallback bridging, typed Surface attributes,
+  instance `top.thickness(base)`, and smooth/dip/extrapolation operations.
+- Refreshed the unified petekTools and petekIO guides from their owning
+  repositories, including the exact viewer and Surface workflows released in
+  this train. Corrected the remaining documentation provenance wording.
+
 ## [0.1.12] - 2026-07-10
 
 ### Changed
