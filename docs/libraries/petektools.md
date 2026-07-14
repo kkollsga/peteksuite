@@ -197,11 +197,11 @@ can build in parallel:
 session = petektools.view({
     "Interpretation": {
         "Surfaces": {
-            "Top Agat": {"object": top_agat, "visible": True},
-            "Base Agat": {"object": base_agat, "visible": False},
+            "Top Dome": {"object": top_dome, "visible": True},
+            "Base Dome": {"object": base_dome, "visible": False},
         }
     }
-}, title="Agat workspace")
+}, title="Dome workspace")
 
 session.tree()                         # metadata only
 session.save("visible.html")           # complete offline snapshot
