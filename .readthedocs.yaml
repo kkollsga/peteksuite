@@ -3,8 +3,9 @@
 # ubuntu-24.04 · Python 3.12 · mkdocs-material built from mkdocs.yml, strict.
 #
 # Unlike CI, Read the Docs checks out ONLY this umbrella repo, so the four
-# library repos are cloned fresh over public HTTPS in the pre_build phase
-# (PETEK_DOCS_CLONE=1) to refresh the per-library guides + executed notebooks.
+# library release tags pinned by pyproject.toml are cloned over public HTTPS in
+# the pre_build phase for wheel fallbacks. Reviewed guides and notebooks remain
+# the copies committed here instead of drifting during the documentation build.
 # The umbrella carries committed copies, so a clone that fails still builds.
 version: 2
 
@@ -15,9 +16,9 @@ build:
   jobs:
     # RTD order: checkout -> create env -> python.install -> pre_build -> mkdocs build.
     pre_build:
-      # 1. Clone the four sibling libraries from GitHub + sync their guides and
-      #    executed notebooks into docs/ (see scripts/sync_library_docs.sh).
-      - PETEK_DOCS_CLONE=1 bash scripts/sync_library_docs.sh
+      # 1. Clone suite-pinned tags for wheel fallbacks while preserving the
+      #    reviewed guide/notebook copies committed in the umbrella.
+      - PETEK_DOCS_CLONE=1 PETEK_DOCS_CLONE_ONLY=1 bash scripts/sync_library_docs.sh
       # 2. The Python API Reference (mkdocstrings) imports the built wheels.
       #    Best-effort, mirroring CI: try PyPI first (once published), then build
       #    from the freshly cloned source trees. Rust may be absent on RTD, so a
@@ -35,8 +36,8 @@ build:
 
 # The mkdocs toolchain (mkdocs, material, mkdocstrings, jupyter, black). The four
 # library wheels are installed best-effort in pre_build (step 2). Current release
-# floors: petektools>=0.2.8, petekio>=0.3.10, petekstatic>=0.1.12,
-# peteksim>=0.1.11.
+# floors: petektools>=0.2.15, petekio>=0.3.15, petekstatic>=0.1.13,
+# peteksim>=0.1.13.
 python:
   install:
     - requirements: requirements-docs.txt

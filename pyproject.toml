@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "peteksuite"
-version = "0.1.14"
+version = "0.1.15"
 description = "The petek subsurface-modelling suite — installs the whole family (petektools, petekio, petekstatic, peteksim)"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -17,10 +17,10 @@ classifiers = [
     "Topic :: Scientific/Engineering",
 ]
 dependencies = [
-    "petektools>=0.2.14",
-    "petekio>=0.3.14",
-    "petekstatic>=0.1.12",
-    "peteksim>=0.1.11",
+    "petektools>=0.2.15",
+    "petekio>=0.3.15",
+    "petekstatic>=0.1.13",
+    "peteksim>=0.1.13",
 ]
 
 [dependency-groups]

@@ -5,6 +5,19 @@ Python meta-package and documentation/release coordinator for the petek family.
 
 ## [Unreleased]
 
+## [0.1.15] - 2026-07-14
+
+### Changed
+- Advanced the coherent suite floors to `petektools>=0.2.15`,
+  `petekio>=0.3.15`, `petekstatic>=0.1.13`, and `peteksim>=0.1.13`.
+- Released the updated viewer design schema end to end: workspace-v2 shared
+  Map/3-D resources and truthful runtime state, durable project/attribute
+  metadata, oriented geomodel frames and schema-v6 sections, plus executable
+  full-stack acceptance across map, section, volume, well-tie, contact,
+  pinch-out, realization, save, and serve paths.
+- Pinned unified-docs library clones to these release tags and preserved the
+  reviewed committed guides/notebooks during CI and Read the Docs builds.
+
 ## [0.1.14] - 2026-07-14
 
 ### Changed

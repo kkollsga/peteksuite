@@ -26,19 +26,15 @@ jobs:
       - name: Checkout umbrella
         uses: actions/checkout@v7
 
-      # The four libraries are separate repos; check them out as siblings so the
-      # sync step can refresh the per-library guides + executed notebooks. These
-      # steps are best-effort — the umbrella carries committed copies, so a
-      # private/unavailable sibling doesn't fail the build.
-      - name: Checkout libraries (best-effort)
+      # Clone the exact library release tags named by pyproject.toml for wheel
+      # fallbacks. Reviewed guide/notebook copies are committed in the umbrella
+      # and are deliberately not overwritten during CI.
+      - name: Checkout libraries (suite-pinned tags; best-effort)
         continue-on-error: true
-        run: |
-          set +e
-          for repo in petekTools petekIO petekStatic petekSim; do
-            git clone --depth 1 "https://github.com/kkollsga/${repo}.git" "_libs/${repo}" 2>/dev/null \
-              && echo "cloned ${repo}" || echo "skip ${repo} (using committed copy)"
-          done
-          true
+        env:
+          PETEK_DOCS_CLONE: "1"
+          PETEK_DOCS_CLONE_ONLY: "1"
+        run: bash scripts/sync_library_docs.sh
 
       - name: Setup Python
         uses: actions/setup-python@v6
@@ -81,9 +77,6 @@ jobs:
 
       - name: Guard reference autodoc (strip blocks for absent wheels)
         run: bash scripts/strip_unimportable_refs.sh
-
-      - name: Sync per-library docs + notebooks
-        run: bash scripts/sync_library_docs.sh
 
       - name: Confidentiality scrub (docs content)
         env:

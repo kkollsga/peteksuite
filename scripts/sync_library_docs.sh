@@ -14,10 +14,14 @@
 #
 # Clone mode (for hosts with no local siblings — e.g. Read the Docs):
 #   PETEK_DOCS_CLONE=1 scripts/sync_library_docs.sh
-# clones each library fresh from GitHub into _libs/<repo> (a build-local dir,
-# gitignored) before syncing. Override the source owner/host or the clone dir:
+# clones each library's suite-pinned release tag from GitHub into _libs/<repo>
+# (a build-local dir, gitignored) before syncing. The tag version is derived
+# from the corresponding lower bound in the umbrella pyproject.toml. Override
+# the source owner/host or the clone dir:
 #   PETEK_DOCS_GIT_BASE=https://github.com/kkollsga   (default)
 #   PETEK_DOCS_LIBS_DIR=_libs                          (default, relative to ROOT)
+# Set PETEK_DOCS_CLONE_ONLY=1 when the clones are needed only as build/install
+# fallbacks; this preserves the reviewed guide/notebook copies committed here.
 #
 # Usage:  scripts/sync_library_docs.sh
 set -euo pipefail
@@ -34,15 +38,37 @@ LIBS=(
 )
 
 CLONE="${PETEK_DOCS_CLONE:-0}"
+CLONE_ONLY="${PETEK_DOCS_CLONE_ONLY:-0}"
 GIT_BASE="${PETEK_DOCS_GIT_BASE:-https://github.com/kkollsga}"
 LIBS_DIR="${PETEK_DOCS_LIBS_DIR:-_libs}"
 
 # Clone-mode: fetch each library fresh (shallow) into $LIBS_DIR/<repo> unless a
 # local sibling or a prior clone is already present. Best-effort — a repo that
 # fails to clone is skipped, and sync_one falls back to the committed copy.
+floor_version() {
+  local package="$1"
+  python - "$package" <<'PY'
+import re
+import sys
+import tomllib
+
+package = sys.argv[1]
+dependencies = tomllib.load(open("pyproject.toml", "rb"))["project"]["dependencies"]
+for dependency in dependencies:
+    match = re.fullmatch(rf"{re.escape(package)}>=([^,; ]+)", dependency)
+    if match:
+        print(match.group(1))
+        break
+else:
+    raise SystemExit(f"no exact lower bound found for {package}")
+PY
+}
+
 clone_one() {
-  local repo="$1"
+  local repo="$1" package="$2" version tag
   local dest="$ROOT/$LIBS_DIR/$repo"
+  version="$(floor_version "$package")"
+  tag="v$version"
   if [ -d "$ROOT/$repo" ]; then
     echo "  = $repo local sibling present (no clone)"; return 0
   fi
@@ -50,10 +76,10 @@ clone_one() {
     echo "  = $repo already at $LIBS_DIR/$repo (no clone)"; return 0
   fi
   mkdir -p "$ROOT/$LIBS_DIR"
-  if git clone --depth 1 "$GIT_BASE/$repo.git" "$dest" 2>/dev/null; then
-    echo "  + cloned $repo -> $LIBS_DIR/$repo"
+  if git clone --depth 1 --branch "$tag" "$GIT_BASE/$repo.git" "$dest" 2>/dev/null; then
+    echo "  + cloned $repo $tag -> $LIBS_DIR/$repo"
   else
-    echo "  ! clone of $GIT_BASE/$repo.git failed (keeping committed copy)"
+    echo "  ! clone of $GIT_BASE/$repo.git at $tag failed (keeping committed copy)"
   fi
 }
 
@@ -103,8 +129,12 @@ sync_one() {
 if [ "$CLONE" = "1" ]; then
   echo "Clone mode: fetching libraries from $GIT_BASE into $LIBS_DIR/"
   for entry in "${LIBS[@]}"; do
-    clone_one "${entry%%:*}"
+    clone_one "${entry%%:*}" "${entry##*:}"
   done
+  if [ "$CLONE_ONLY" = "1" ]; then
+    echo "Clone-only mode: preserving committed suite documentation."
+    exit 0
+  fi
 fi
 
 echo "Syncing library docs into the umbrella site:"
